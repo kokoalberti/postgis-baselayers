@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+      <meta charset='UTF-8'/>
+      <meta name='viewport' content="width=device-width, initial-scale=1">
+      <meta name='description' content="{% block description %}{% endblock %}">
+      <meta name='keywords' content="{% block keywords %}{% endblock %}">
+      <title>{% block title %}{% endblock %}</title>
+      {% block headcss %}{% endblock %}
+      {% block headjs %}{% endblock %}
+      {% block metatags %}{% endblock %}
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+      <style>
+        h1.nav {
+            padding:20px 0px 20px 0px;
+            font-size:1.6em;
+        }
+        h1 {
+            font-size:1.6em;
+        }
+        h2 {
+            font-size:1.4em;
+        }
+        h3 {
+            font-size:1.1em;
+        }
+
+        i.status-icon { 
+            color:#aaaaaa; 
+            margin-left:3px;
+        }
+        i.status-icon::after {
+            font-family:monospace;
+            font-size:0.9em;
+            font-weight:400;
+            line-height:0.9em;
+        }
+        div.status-0 i.status-icon  { color:#aaaaaa; }
+        div.status-0 i.status-icon::after { content: " Unknown"; }
+        div.status-1 i.status-icon  { color:#aaaaaa; }
+        div.status-1 i.status-icon::after { content: " Disabled"; }
+        div.status-2 i.status-icon  { color:#fac205; }
+        div.status-2 i.status-icon::after { content: " Queued..."; }
+        div.status-3 i.status-icon  { color:#fac205; }
+        div.status-3 i.status-icon::after { content: " Working..."; }
+        div.status-4 i.status-icon  { color:#fac205; }
+        div.status-4 i.status-icon::after { content: " Installing..."; }
+        div.status-5 i.status-icon  { color:#e50000; }
+        div.status-5 i.status-icon::after { content: " Error"; }
+        div.status-6 i.status-icon  { color:#15b01a; }
+        div.status-6 i.status-icon::after { content: " Installed"; }
+        .status-column {
+            width:200px;
+        }
+        a, a:hover {
+          text-decoration:none;
+        }
+        ul#log-links {
+          padding-left:17px;
+        }
+        ul#log-links a {
+          color:#ccc;
+        }
+        ul#log-links a:hover {
+          color:#aaa;
+        }
+        code, pre {
+          color:#444;
+
+        }
+        pre {
+          background-color:#f5f5f5;
+          padding:7px;
+        }
+      </style>
+    </head>
+    <body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        {% block footjs %}{% endblock %}
+    </body>
+</html>

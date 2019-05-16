@@ -1,0 +1,6 @@
+{
+	"name":"geonames",
+	"description":"Geonames database",
+	"version":"1",
+	"attribution":"geonames.org"
+}

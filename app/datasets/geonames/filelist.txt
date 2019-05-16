@@ -1,0 +1,4 @@
+http://download.geonames.org/export/dump/allCountries.zip
+http://download.geonames.org/export/dump/alternateNames.zip
+http://download.geonames.org/export/dump/countryInfo.txt
+http://download.geonames.org/export/dump/iso-languagecodes.txt

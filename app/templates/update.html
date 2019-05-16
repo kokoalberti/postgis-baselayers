@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1 class="nav"><tt><a href="/" style="text-decoration:none;">PostGIS Baselayers</a></tt></h1>
+    <div class="row">
+        <div class="col">
+            <p>{{ message }}</p>
+            <p><a href="{{url_for('index')}}">Go to dataset overview</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

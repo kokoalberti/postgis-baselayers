@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="container">
+
+    <h1 class="nav"><tt><a href="/" style="text-decoration:none;">PostGIS Baselayers</a></tt></h1>
+
+    <table class="table table-bordered">
+    <thead class="thead-light">
+    <tr>
+        <th>Dataset</th>
+        <th>Description</th>
+        <th class="status-column">Status</th>
+
+    </tr>
+    </thead>
+
+    {% for dataset in datasets %}
+    <tbody>
+    <tr>
+    	<td><a href="{{url_for('dataset', dataset_name=dataset.name)}}"><tt>{{ dataset.name }}</tt></a></td>
+        
+        <td>{{ dataset.metadata.get("description","") }}</td>
+        <td class="status-column"><div id="status-{{dataset.name}}" class="status-{{dataset.status}}"><i class="fas fa-circle status-icon"></i></div></td>
+    </tr>
+    </tbody>
+    {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
+
+{% block footjs %}
+<script>
+/*
+$(document).ready(function() {
+    (function status() {
+      $.ajax({
+        url: '/status.json', 
+        success: function(data) {
+          $.each(data, function(thing) {
+            $("div#status-"+thing).attr("class","status-"+data[thing])
+          })
+        },
+        complete: function() {
+          setTimeout(status, 2000);
+        }
+      });
+    })();
+});
+*/
+</script>
+{% endblock %}

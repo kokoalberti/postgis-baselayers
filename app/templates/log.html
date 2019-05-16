@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="nav"><tt><a href="/">PostGIS Baselayers</a> &gt; <a href="{{url_for('dataset', dataset_name=log.name)}}">{{log.name}}</a> &gt; logs</tt></h1>
+</div>
+
+<div class="container" style="color:#888">
+<pre>
+Installation Log
+================
+Timestamp: {{log.created.strftime('%Y-%m-%d %H:%M:%S')}}
+Dataset: {{log.name}}
+Task ID: {{log.task}}
+</pre>
+<hr>
+<pre>{{log.log}}</pre>
+</div>
+{% endblock %}
+
+{% block footjs %}
+<script>
+
+</script>
+{% endblock %}

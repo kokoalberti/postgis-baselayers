@@ -1,0 +1,8 @@
+.env
+*.pyc
+datasets/*/src
+datasets/*/tmp
+datasets/*/lock.txt
+datasets/*/log.txt
+huey.db
+notes.txt

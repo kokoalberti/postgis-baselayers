@@ -1,0 +1,47 @@
+version: '3'
+services:
+  postgis-baselayers-app:
+    build: app/
+    ports:
+      - 8003:8080
+    container_name: postgis-baselayers-app
+    networks:
+      - default
+    volumes:
+      - ./app:/app
+      - postgis_baselayers_volume:/opt/postgis-baselayers
+    env_file: .env
+    depends_on:
+      - postgis-database
+    command: flask run
+  postgis-baselayers-worker:
+    build: app/
+    container_name: postgis-baselayers-worker
+    networks:
+      - default
+    volumes:
+      - ./app:/app
+      - postgis_baselayers_volume:/opt/postgis-baselayers
+    env_file: .env
+    depends_on:
+      - postgis-baselayers-app
+    command: huey_consumer.py application.huey -w1
+  postgis-database:
+    build: db/
+    container_name: postgis-database
+    env_file: .env
+    networks:
+      - default
+    volumes:
+      - postgis_database_volume:/var/lib/postgresql
+    ports:
+      - 35432:5432
+    command: -c "listen_addresses=*" 
+networks:
+  default:
+    external: false
+volumes:
+  postgis_database_volume:
+  postgis_baselayers_volume:
+
+

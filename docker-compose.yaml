@@ -1,0 +1,34 @@
+version: '3'
+services:
+  postgis-baselayers:
+    build: app/
+    ports:
+      - 8003:8080
+    container_name: postgis-baselayers
+    networks:
+      - default
+    volumes:
+      - postgis_baselayers_volume:/opt/postgis-baselayers
+    env_file: .env
+    environment:
+      - GUNICORN_CMD_ARGS=--bind=0.0.0.0:8080 --workers=1
+    depends_on:
+      - postgis-database
+    command: /usr/bin/supervisord -c "/etc/supervisor/conf.d/supervisord.conf"
+  postgis-database:
+    build: db/
+    container_name: postgis-database
+    env_file: .env
+    networks:
+      - default
+    volumes:
+      - postgis_database_volume:/var/lib/postgresql
+    ports:
+      - 35432:5432
+    command: -c "listen_addresses=*" 
+networks:
+  default:
+    external: false
+volumes:
+  postgis_database_volume:
+  postgis_baselayers_volume:

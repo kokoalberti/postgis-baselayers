@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set status = ["Unknown", "Disabled", "Pending", "Downloading","Importing","Failed", "Ready"] %}
+<div class="container">
+    <h1 class="nav"><tt><a href="/" style="text-decoration:none;">PostGIS Baselayers</a> &gt; {{dataset.name}}</tt></h1>
+</div>
+<div class="container" style="background-color:#e5e5e5;padding-top:15px;padding-bottom:15px;border-radius:5px;">
+    <div class="row align-items-center">
+        <div class="col">
+            <div id="status-{{dataset.name}}" class="status-{{dataset.status}}" style="font-size:1.3em;">
+             <i class="fas fa-circle status-icon"></i>
+            </div>
+        </div>
+        <div class="col text-right">
+            <form action="modify" method="POST">
+                {% if dataset.status == 1 %}
+                <input type="submit" name="action" value="Install" class="btn btn-primary">
+                {% elif dataset.status == 5 %}
+                <input type="submit" name="action" value="Install" class="btn btn-primary">
+                <input type="submit" name="action" value="Clean" class="btn btn-primary">
+                {% elif dataset.status == 6 %}
+                <input type="submit" name="action" value="Uninstall" class="btn btn-primary">
+                {% else %}
+                
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    {% if dataset.status == 2 or dataset.status == 3 or dataset.status == 4 %}
+    <div style="color:#666;">
+    <hr>
+    <strong>Hang in there!</strong> It looks like there is currently task in progress for this dataset, hopefully it will just take a minute. <a href="javascript:location.reload();">Reload this page</a> to update the status. Tasks automatically time out after 10 minutes.
+    </div>
+    {% endif %}
+</div>
+<div class="container" style="margin-top:20px;">
+    {{readme}}
+</div>
+
+
+<div class="container" style="color:#ccc;font-size:0.9em;">
+    <hr>
+    <h5>Task Log</h5>
+    <ul id="log-links">
+    {% for item in log %}
+        <li><tt><a href="{{url_for('log', dataset_name=dataset.name, task_id=item.task)}}">{{item.created.strftime('%Y-%m-%d %H:%M:%S')}} - {{item.descr}}</a></tt></li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block footjs %}
+<script>
+/*
+$(document).ready(function() {
+    (function status() {
+      $.ajax({
+        url: '/status.json', 
+        success: function(data) {
+          $.each(data, function(thing) {
+            $("div#status-"+thing).attr("class","status-"+data[thing])
+          })
+        },
+        complete: function() {
+          setTimeout(status, 2000);
+        }
+      });
+    })();
+});
+*/
+</script>
+{% endblock %}
