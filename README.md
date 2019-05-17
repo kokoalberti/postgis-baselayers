@@ -8,7 +8,7 @@ The application and database works nicely as a standalone spatial database that 
 
 ## Why
 
-For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize them. It's nice to have all these datasets available in a single PostGIS database that can be contributed to as well by others.
+For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS or QGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize them. It's nice to have all these datasets available in a single PostGIS database that can be contributed to as well by others.
 
 Installation of new datasets is a breeze with the installers, and having all the datasets in a single database lets you do all sort of fun queries across different datasets.
 
