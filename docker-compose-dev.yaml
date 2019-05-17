@@ -10,13 +10,15 @@ services:
     volumes:
       - ./app:/app
       - postgis_baselayers_volume:/opt/postgis-baselayers
+    env_file: .env
     environment:
       - FLASK_ENV=development
       - FLASK_RUN_PORT=8080
       - FLASK_RUN_HOST=0.0.0.0
       - FLASK_DEBUG=1
       - FLASK_APP=application.py
-    env_file: postgis-baselayers.env
+      - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - POSTGRES_OGR=PG:"dbname=${POSTGRES_DB} host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD}"
     depends_on:
       - postgis-database
     command: flask run
@@ -28,7 +30,10 @@ services:
     volumes:
       - ./app:/app
       - postgis_baselayers_volume:/opt/postgis-baselayers
-    env_file: postgis-baselayers.env
+    env_file: .env
+    environment: 
+      - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - POSTGRES_OGR=PG:"dbname=${POSTGRES_DB} host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD}"
     depends_on:
       - postgis-baselayers-app
     command: huey_consumer.py application.huey -w1

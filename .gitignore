@@ -1,4 +1,3 @@
-.env
 *.pyc
 app/datasets/*/src
 app/datasets/*/tmp

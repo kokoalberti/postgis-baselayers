@@ -9,16 +9,18 @@ services:
       - default
     volumes:
       - postgis_baselayers_volume:/opt/postgis-baselayers
-    env_file: postgis-baselayers.env
+    env_file: .env
     environment:
       - GUNICORN_CMD_ARGS=--bind=0.0.0.0:8080 --workers=1
+      - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - POSTGRES_OGR=PG:"dbname=${POSTGRES_DB} host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD}"
     depends_on:
       - postgis-database
     command: /usr/bin/supervisord -c "/etc/supervisor/conf.d/supervisord.conf"
   postgis-database:
     build: db/
     container_name: postgis-database
-    env_file: postgis-baselayers.env
+    env_file: .env
     networks:
       - default
     volumes:
