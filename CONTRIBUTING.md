@@ -10,7 +10,7 @@ Please contact me first if you'd like to help out with something.
 
 ## Adding new datasets
 
-The `[./app/datasets/](app/datasets/)` subdirectory contains the scripts to install each individual dataset. Each dataset subdirectory contains:
+The [`./app/datasets/`](app/datasets/) subdirectory contains the scripts to install each individual dataset. Each dataset subdirectory contains:
 
 * A `Makefile` with `download`, `install`, and `clean` targets.
 * A `README.md` with documentation.
