@@ -34,13 +34,8 @@ install:
 	ogr2ogr -f PostgreSQL -skipfailures -append $(POSTGRES_OGR) -nlt PROMOTE_TO_MULTI -lco SCHEMA=naturalearth -nln ne_10m_lakes /vsizip/src/ne_10m_lakes_europe.zip/ne_10m_lakes_europe.shp
 	ogr2ogr -f PostgreSQL -skipfailures -append $(POSTGRES_OGR) -nlt PROMOTE_TO_MULTI -lco SCHEMA=naturalearth -nln ne_10m_lakes /vsizip/src/ne_10m_lakes_north_america.zip/ne_10m_lakes_north_america.shp
 
-
-
 	rm -rf tmp
 	@echo Done installing!
-
-	#Force an error for dev purposes
-	exit 1
 
 clean:
 	@echo Cleaning up...
