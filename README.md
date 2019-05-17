@@ -1,10 +1,12 @@
 # PostGIS Baselayers
 
-PostGIS Baselayers is a PostGIS Docker container with a lightweight web-interface which lets you - with the click of a button - download and import an assortment of public vector datasets into the database. It works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
+PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes with a Docker environment with a PostGIS container to get up and running quickly.
+
+The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
 
 ## Why
 
-For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS, and for various other spatial analysis tasks. Having these datasets just lying around in all sorts of different formats was becoming a bit annoying, and I decided to put some time into a framework that would organize this data and that could be contributed to by others.
+For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize these datasets, make them available in a PostGIS environment, and that could be contributed to by others.
 
 ## Getting Started
 
@@ -16,7 +18,7 @@ Once running, visit the management application in your browser at `http://localh
 
 ## Datasets
 
-Vector datasets currently available in PostGIS Baselayers are:
+Vector datasets currently available in PostGIS Baselayers are currently:
 
 * [Geonames](app/datasets/geonames/)
 * [GADM](app/datasets/gadm/)
@@ -27,17 +29,15 @@ If there is a dataset you'd like to see included, please create an issue in the 
 
 ## Issues
 
-See the issue tracker for a list of issues and TODOs. This is still pretty much a work in progress, I hope in the future it can grow into something other people use as well.
+See the issue tracker for a list of issues and features.
 
 ## Technical Details
 
-The container is based on `mdillon/postgis` and uses `supervisord` to run PostGIS, the Flask web-application, and a Huey work queue for downloading datasets and doing other tasks in the background.
-
-While it's not necessarily best practice to ship multiple services in a single container, I've decided to do so anyway to keep everything nice and compact. This way you won't have to use Docker Compose if you don't want to, and it'll be easy to integrate the PostGIS Baselayers container as-is into other applications without having to configure the database, webapp, and worker individually. Just start up the container, install the datasets you want, and you're good to go. This needs to be as simple as possible.
+The database container is based on `mdillon/postgis`, and the application container uses `supervisord` to run the web-application and a Huey work queue for downloading and installing datasets in the background. 
 
 ## Contributing
 
-Contributions are welcome, either on the application itself or by adding additional datasets to the index. Please contact me first before sending a PR.
+Contributions are welcome, either on the application itself or by adding additional datasets to the index. Please contact me first if you have some ideas or would like to contribute.
 
 ### Datasets
 
@@ -47,11 +47,11 @@ The `datasets` subdirectory contains all the instructions to install each indivi
 * A `README.md` with documentation
 * A `metadata.json` file with additional metadata.
 
-See the [example](app/datasets/example/) dataset for a basic setup with some documentation that can be used as a template for a new dataset.
+See the [example](app/datasets/example/) dataset for a basic setup with some documentation that can be used as a template for a new dataset. The general idea is that the `download` target in the Makefile downloads the dataset from some location on the internet, and that the `install` target installs the dataset into a separate schema in the PostGIS database. The container has an assortment of tools installed (GDAL, psql) to help in this process.
 
-The general idea is that the `download` target in the Makefile downloads the dataset from some location on the internet, and that the `install` target installs the dataset into a separate schema in the PostGIS database. The container has an assortment of geospatial tools installed to help in this process.
+See the [Makefile](app/datasets/example/Makefile) of the example dataset for an overview of how a dataset is downloaded and installed.
 
 ### Application
 
-The application can be run in development mode by using Docker Compose and the `docker-compose-dev.yaml` compose file.
+The application can be run in development mode by using Docker Compose and the `docker-compose-dev.yaml` compose file. This setup runs the application and the work queue in two different containers. Also, the application container uses Flask's development server instead of gunicorn for serving the web app.
 
