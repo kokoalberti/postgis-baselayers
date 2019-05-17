@@ -46,6 +46,9 @@ class DatabaseException(Exception):
 class ConfigError(Exception):
     pass
 
+if 'POSTGIS_BASELAYERS_WORKDIR' not in os.environ:
+    os.environ['POSTGIS_BASELAYERS_WORKDIR'] = '/opt/postgis-baselayers'
+
 # Create our SqliteHuey instance
 huey_file = os.path.join(os.environ['POSTGIS_BASELAYERS_WORKDIR'], 'huey.db')
 huey = SqliteHuey(filename=huey_file)
