@@ -4,7 +4,7 @@ PostGIS Baselayers is a web application that connects to a PostGIS database and 
 
 The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
 
-[[docs/img/screenshot-home.png|alt=PostGIS Baselayers Homepage]]
+![PostGIS Baselayers Homepage](docs/img/screenshot-home.png)
 
 ## Why
 
