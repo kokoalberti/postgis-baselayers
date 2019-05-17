@@ -31,7 +31,8 @@ Vector datasets currently available in PostGIS Baselayers are currently:
 * [Geonames](app/datasets/geonames/)
 * [GADM](app/datasets/gadm/)
 * [Koeppen-Geiger Climate Classifications](app/datasets/koeppengeiger/)
-* [Example](app/datasets/example/)
+* [Natural Earth](app/datasets/naturalearth/)
+
 
 If there is a dataset you'd like to see included, please create an issue in the issue tracker, or have a look at [CONTRIBUTING.md](CONTRIBUTING.md) on how to add it yourself.
 
