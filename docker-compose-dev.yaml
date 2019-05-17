@@ -40,7 +40,7 @@ services:
   postgis-database:
     build: db/
     container_name: postgis-database
-    env_file: postgis-baselayers.env
+    env_file: .env
     networks:
       - default
     volumes:
