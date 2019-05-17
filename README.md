@@ -20,7 +20,7 @@ Clone the repository and build the containers with `docker-compose build` and st
 
 Once running, visit the management application in your browser at `http://localhost:8003/` and choose which datasets you want to install into the database. The container running the PostGIS database itself is exposed on port `35432` to avoid conflicts with other PostGIS instances that may be running on your machine.
 
-### With an existing database
+### Existing Database
 
 TODO
 
@@ -33,33 +33,12 @@ Vector datasets currently available in PostGIS Baselayers are currently:
 * [Koeppen-Geiger Climate Classifications](app/datasets/koeppengeiger/)
 * [Example](app/datasets/example/)
 
-If there is a dataset you'd like to see included, please create an issue in the issue tracker, or add it yourself and send a pull request.
+If there is a dataset you'd like to see included, please create an issue in the issue tracker, or have a look at [CONTRIBUTING.md](CONTRIBUTING.md) on how to add it yourself.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ## Issues
 
 See the issue tracker for a list of issues and features.
-
-## Technical Details
-
-The database container is based on `mdillon/postgis`, and the application container uses `supervisord` to run the web-application and a Huey work queue for downloading and installing datasets in the background. 
-
-## Contributing
-
-Contributions are welcome, either on the application itself or by adding additional datasets to the index. Please contact me first if you have some ideas or would like to contribute.
-
-### Datasets
-
-The `datasets` subdirectory contains all the instructions to install each individual dataset. Each dataset subdirectory contains:
-
-* A `Makefile` with `download`, `install`, and `clean` targets
-* A `README.md` with documentation
-* A `metadata.json` file with additional metadata.
-
-See the [example](app/datasets/example/) dataset for a basic setup with some documentation that can be used as a template for a new dataset. The general idea is that the `download` target in the Makefile downloads the dataset from some location on the internet, and that the `install` target installs the dataset into a separate schema in the PostGIS database. The container has an assortment of tools installed (GDAL, psql) to help in this process.
-
-See the [Makefile](app/datasets/example/Makefile) of the example dataset for an overview of how a dataset is downloaded and installed.
-
-### Application
-
-The application can be run in development mode by using Docker Compose and the `docker-compose-dev.yaml` compose file. This setup runs the application and the work queue in two different containers. Also, the application container uses Flask's development server instead of gunicorn for serving the web app.
-
