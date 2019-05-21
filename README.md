@@ -1,6 +1,8 @@
 # PostGIS Baselayers
 
-PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS container to get up and running quickly.
+**This is a work in progress!**
+
+PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.
 
 The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
 
@@ -12,21 +14,30 @@ For a few years now I have had an assortment of different base layers lying arou
 
 Installation of new datasets is a breeze with the installers, and having all the datasets in a single database lets you do all sort of fun queries across different datasets.
 
-## Getting Started
+## Quick Start
 
-### Quick Start
+Clone the repository with `https://github.com/kokoalberti/postgis-baselayers.git`, build the containers with `docker-compose build`, and start the service with `docker-compose up`. 
 
-Clone the repository and build the containers with `docker-compose build` and start the service with `docker-compose up`. 
+Once running, visit the management application in your browser at `http://localhost:8003/` and choose which datasets you want to install into the database. 
 
-Once running, visit the management application in your browser at `http://localhost:8003/` and choose which datasets you want to install into the database. The container running the PostGIS database itself is exposed on port `35432` to avoid conflicts with other PostGIS instances that may be running on your machine.
+## Accessing Data
 
-### Existing Database
+Once a dataset is installed, you can access the PostGIS database using the following credentials:
 
-TODO
+Hostname: `localhost`
+Port: `35432`
+Database name: `postgis-database`
+Username/password: `postgis`
+
+See for some more examples:
+
+* [QGIS](docs/QGIS.md)
+* [GDAL/OGR](docs/GDALOGR.md)
+* [PSQL](docs/PSQL.md)
 
 ## Datasets
 
-Vector datasets currently available in PostGIS Baselayers are:
+Vector datasets currently available in PostGIS Baselayers are a selection of:
 
 * [Geonames](app/datasets/geonames/)
 * [GADM](app/datasets/gadm/)
