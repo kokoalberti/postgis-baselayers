@@ -1,6 +1,6 @@
 # PostGIS Baselayers
 
-**This is a work in progress!**
+**This is a work in progress! Just putting it out there and hoping to do some work it in the coming months.**
 
 PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.
 
@@ -24,10 +24,10 @@ Once running, visit the management application in your browser at `http://localh
 
 Once a dataset is installed, you can access the PostGIS database using the following credentials:
 
-Hostname: `localhost`
-Port: `35432`
-Database name: `postgis-database`
-Username/password: `postgis`
+    Hostname: localhost
+    Port: 35432
+    Database name: postgis-database
+    Username/password: postgis
 
 See for some more examples:
 
