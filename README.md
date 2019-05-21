@@ -1,6 +1,6 @@
 # PostGIS Baselayers
 
-**This is a work in progress! Just putting it out there and hoping to do some work it in the coming months.**
+**This is a work in progress! Still hoping to improve it in the coming months, let me know if you like the idea.**
 
 PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.
 
