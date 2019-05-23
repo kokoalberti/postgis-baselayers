@@ -1,7 +1,16 @@
 {
     "name": "geonames",
-    "description": "Geonames.org placenames database.",
-    "version": "1",
-    "attribution": ["Geonames data licensed under Creative Commons Attribution 4.0 license. More information about Geonames at https://www.geonames.org/about.html"],
-    "layers": ["geoname"]
+    "metadata": {
+        "description": "Geonames placenames database.",
+        "attribution": ["Geonames data licensed under Creative Commons Attribution 4.0 license. More information about Geonames at https://www.geonames.org/about.html"],
+        "url": ""
+    },
+    "layers": [
+        { 
+            "name": "geonames",
+            "metadata": {
+                "description": "Geonames main placename database." 
+            }
+        }
+    ]
 }

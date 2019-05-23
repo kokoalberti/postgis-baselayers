@@ -1,7 +1,28 @@
 {
     "name": "gadm",
-    "description": "GADM Global Administrative Regions",
-    "version": "1",
-    "attribution": ["GADM 3.6 (released on 6 May 2018). https://gadm.org/"],
-    "layers": ["gadm36_0", "gadm36_1", "gadm36_2"]
+    "metadata": {
+        "description": "GADM Global Administrative Regions",
+        "attribution": ["GADM 3.6 (released on 6 May 2018). https://gadm.org/"],
+        "url": ""
+    },
+    "layers": [
+        {
+            "name": "gadm36_0",
+            "metadata": {
+                "description": "GADM Level 0 Administrative Divisions"
+            }
+        },
+        {
+            "name": "gadm36_1",
+            "metadata": {
+                "description": "GADM Level 1 Administrative Divisions"
+            }
+        }, 
+        {
+            "name": "gadm36_2",
+            "metadata": {
+                "description": "GADM Level 2 Administrative Divisions"
+            }
+        }
+    ]
 }

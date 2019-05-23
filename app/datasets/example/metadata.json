@@ -1,7 +1,16 @@
 {
     "name": "example",
-    "description": "Example dataset that contains locations of airports around the world.",
-    "version": "1",
-    "attribution": ["Public domain airports data from http://ourairports.com/data/"],
-    "layers": ["airports"]
+    "metadata": {
+        "description": "Example dataset.",
+        "attribution": ["Public domain airports data from http://ourairports.com/data/"],
+        "url": ""
+    },
+    "layers": [
+        { 
+            "name": "airports", 
+            "metadata": {
+                "description": "Point locations of airports around the world."
+            }
+        }
+    ]
 }
