@@ -2,30 +2,60 @@
 {% block content %}
 
 
-<div class="container">
+<div class="container container-fluid">
 
-    <h1 class="nav"><tt><a href="/" style="text-decoration:none;">PostGIS Baselayers</a></tt></h1>
+    <h1 class="nav"><tt><a href="/">PostGIS Baselayers</a></tt></h1>
 
-    <table class="table table-bordered">
+
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" href="#">Datasets</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Logs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Settings</a>
+      </li>
+    </ul>
+
+    <div style="border-left:1px solid rgb(222, 226, 230);border-right:1px solid rgb(222, 226, 230);padding:15px;color:#333">
+        <p>
+        There are 6 installed layers.
+        </p>
+    </div>
+    <table id="dataset-table" class="table table-bordered">
+    <!--
     <thead class="thead-light">
     <tr>
-        <th>Dataset</th>
-        <th>Description</th>
-        <th class="status-column">Status</th>
-
+        <th style="color:#000">
+            <nobr><i class="fas fa-fw fa-layer-group"></i> Dataset &nbsp;/ <i class="fas fa-fw fa-map-marker-alt" style="color:#aaa;"></i> Layers</nobr>
+        </th>
+        <th colspan="2">Description</th>
     </tr>
     </thead>
+    -->
 
-    {% for dataset in datasets %}
     <tbody>
-    <tr>
-    	<td><a href="{{url_for('dataset', dataset_name=dataset.name)}}"><tt>{{ dataset.name }}</tt></a></td>
-        
-        <td>{{ dataset.metadata.get("description","") }}</td>
-        <td class="status-column"><div id="status-{{dataset.name}}" class="status-{{dataset.status}}"><i class="fas fa-circle status-icon"></i></div></td>
-    </tr>
-    </tbody>
+    {% for layer in layers %}
+        <tr style="background-color:#e9ecef;">
+            <td>
+                <i class="fas fa-fw fa-layer-group"></i> <a href=""><tt><strong>{{ layer.dataset }}</strong></tt></a></td>        
+            <td colspan="3">
+                 <strong>{{ layer.dataset_metadata.description }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="truncate"><i class="fas fa-fw fa-map-marker-alt" style="color:#ccc;"></i> {{ layer.layer }}</div>
+            </td>
+            <td>{{ layer.layer_metadata.description }}</td>
+            <td class="status-column"><div id="status-{{layer.name}}" class="status-{{layer.status}}"><i class="fas fa-circle status-icon"></i></div></td>
+        </tr>
     {% endfor %}
+    </tbody>
+
+
     </table>
 </div>
 

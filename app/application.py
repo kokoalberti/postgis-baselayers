@@ -106,31 +106,27 @@ def update():
     Creates or updates the metadata in the postgis_baselayers table. This table
     is used internally to keep track of which datasets have been installed and
     what their status is.
-
-    Status:
-    0: unknown
-    1: created/disabled
-    2: queued
-    3: working (on other stuff like clean)
-    4: working (on installation)
-    5: error
-    6: installed
     """
     cur = g.conn.cursor()
     cur.execute("""
         CREATE SCHEMA IF NOT EXISTS postgis_baselayers;
-        SET search_path TO postgis_baselayers;
-        CREATE TABLE IF NOT EXISTS postgis_baselayers (
-          name varchar(128) PRIMARY KEY,  
-          status int DEFAULT 1 NOT NULL,
-          metadata json NOT NULL
+        CREATE TABLE IF NOT EXISTS postgis_baselayers.dataset (
+          name varchar(256) PRIMARY KEY,    -- eg. 'example'
+          metadata json NOT NULL            -- flexible column for later use
         );
-        CREATE TABLE IF NOT EXISTS postgis_baselayers_log (
+        CREATE TABLE IF NOT EXISTS postgis_baselayers.layer (
+          key varchar(512) PRIMARY KEY,     -- eg. 'example.airports'
+          name varchar(256) NOT NULL,       -- eg. 'airports'
+          dataset_name varchar(256) REFERENCES postgis_baselayers.dataset(name),
+          status int DEFAULT 1 NOT NULL,    -- 0: unknown; 1: created; 2: queued; 3: working 4: working 5: error 6: installed
+          metadata json NOT NULL            -- flexible column for later use
+        );
+        CREATE TABLE IF NOT EXISTS postgis_baselayers.log (
           id SERIAL PRIMARY KEY,
           created TIMESTAMP DEFAULT NOW(), 
-          name varchar(128) REFERENCES postgis_baselayers(name),
-          task varchar(128) NOT NULL,
-          descr varchar(128),
+          layer_key varchar(128) REFERENCES postgis_baselayers.layer(key),
+          target varchar(128) NOT NULL,     -- eg: 'install' or 'uninstall'
+          descr varchar(128),               -- eg: 'install successful'
           log TEXT
         );
     """)
@@ -139,20 +135,33 @@ def update():
     # Parse and update all the datasets.
     metadata_path = os.path.join(app.root_path, "datasets", "*", "metadata.json")
     for metadata_file in glob(metadata_path):
-        try:
-            with open(metadata_file) as f:
-                json_metadata = json.load(f)
+        with open(metadata_file) as f:
+            print("next dataset:{}".format(metadata_file))
+            dataset = json.load(f)
+            
+            print(dataset)
+            cur.execute("""
+                INSERT INTO postgis_baselayers.dataset (name, metadata) 
+                VALUES (%s, %s) 
+                ON CONFLICT ON CONSTRAINT dataset_pkey 
+                DO UPDATE SET metadata = %s;
+            """, (dataset['name'], json.dumps(dataset['metadata']), json.dumps(dataset['metadata'])))
+
+            for layer in dataset['layers']:
+                print("---")
+                print(layer)
+                print(json.dumps(layer['metadata']))
+                key = "{}.{}".format(dataset['name'], layer['name'])
                 cur.execute("""
-                    INSERT INTO postgis_baselayers (name, metadata) 
-                    VALUES (%s, %s) 
-                    ON CONFLICT ON CONSTRAINT postgis_baselayers_pkey 
-                    DO UPDATE
-                        SET metadata = %s;
-                """, (json_metadata['name'], json.dumps(json_metadata), json.dumps(json_metadata)))
-                g.conn.commit()
-        except:
-            message = "Update failed."
-            return render_template('update.html', **locals())
+                    INSERT INTO postgis_baselayers.layer (key, name, dataset_name, metadata)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT ON CONSTRAINT layer_pkey 
+                    DO UPDATE SET metadata = %s;
+                """, (key, layer['name'], dataset['name'], json.dumps(layer['metadata']), json.dumps(layer['metadata'])))
+                print("DONE!!")
+            g.conn.commit()
+        #message = "Update failed"
+        #return render_template('update.html', **locals())
     message = "Update/initialization completed."
     return render_template('update.html', **locals())
 
@@ -175,13 +184,20 @@ def index():
     cur = g.conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
         SELECT 
-            name, status, metadata 
+            layer.key,
+            layer.dataset_name as dataset, 
+            layer.name as layer,
+            layer.status,
+            layer.metadata as layer_metadata,
+            dataset.metadata as dataset_metadata
         FROM 
-            postgis_baselayers.postgis_baselayers 
-        ORDER BY 
-            name;
+            postgis_baselayers.layer 
+        LEFT JOIN 
+            postgis_baselayers.dataset 
+        ON 
+            layer.dataset_name=dataset.name;
     """)
-    datasets = cur.fetchall()
+    layers = cur.fetchall()
     root_path = app.root_path
     return render_template("index.html", **locals())
 
