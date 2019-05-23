@@ -1,6 +1,7 @@
 {
-	"name":"gadm",
-	"description":"Global administrative regions",
-	"version":"1",
-	"attribution":"GADM see gadm.org"
+    "name": "gadm",
+    "description": "GADM Global Administrative Regions",
+    "version": "1",
+    "attribution": ["GADM 3.6 (released on 6 May 2018). https://gadm.org/"],
+    "layers": ["gadm36_0", "gadm36_1", "gadm36_2"]
 }

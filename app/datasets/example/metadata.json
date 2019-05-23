@@ -1,6 +1,7 @@
 {
-	"name":"example",
-	"description":"Example dataset that contains some random points.",
-	"version":"1",
-	"attribution":""
+    "name": "example",
+    "description": "Example dataset that contains locations of airports around the world.",
+    "version": "1",
+    "attribution": ["Public domain airports data from http://ourairports.com/data/"],
+    "layers": ["airports"]
 }
