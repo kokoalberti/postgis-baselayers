@@ -358,11 +358,6 @@ def run_task(key, target, task=None, timeout=1800):
                     shutil.copy2(file_path, temp_dir.name)
                     logger.info("Copied {} to {}".format(file_path, os.path.join(temp_dir.name, f)))
 
-            # Determine makefile to use
-            makefile = os.path.join(temp_dir.name, f"{layer}.make")
-            if not os.path.exists(makefile):
-                raise Exception(f"Makefile '{makefile}' not found.")
-
             # Set some additional environment variables for our installation
             # subprocesses.
             subprocess_env = copy.deepcopy(os.environ)
