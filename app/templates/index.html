@@ -3,34 +3,24 @@
 {% block content %}
     <div class="intro">
         <p>
-        There are 6 installed layers.
+        Welcome to PostGIS Baselayers. The following datasets are available:
         </p>
-
 
     </div>
 
     <form id="install-form" action="{{ url_for('install') }}" method="POST">
     <table id="dataset-table" class="table table-bordered">
-    <!--
-    <thead class="thead-light">
-    <tr>
-        <th style="color:#000">
-            <nobr><i class="fas fa-fw fa-layer-group"></i> Dataset &nbsp;/ <i class="fas fa-fw fa-map-marker-alt" style="color:#aaa;"></i> Layers</nobr>
-        </th>
-        <th colspan="2">Description</th>
-    </tr>
-    </thead>
-    -->
+
     <tbody>
 
     {% for layer in layers %}
         {% if loop.changed(layer.dataset) %}
-        <tr style="background-color:#e9ecef;">
+        <tr style="background-color:#f5f5f5;">
             <td style="width:0%;padding-right:0px;">
                 <i class="fas fa-fw fa-layer-group"></i>
             </td>
             <td>
-                <a href=""><tt><strong>{{ layer.dataset }}</strong></tt></a>
+                <a href="{{ url_for('dataset', dataset_name=layer.dataset) }}"><tt><strong>{{ layer.dataset }}</strong></tt></a>
             </td>        
             <td colspan="2">
                  <strong>{{ layer.dataset_metadata.description }}</strong>
@@ -49,11 +39,11 @@
                 {% if layer.status == 0 %}
                     <nobr><input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;"></nobr>
                 {% elif layer.status == 1 %}
-                    <nobr><span style="color:#15b01a;"><i class="fas fa-fw fa-check"></i> Installed</span></nobr>
+                    <nobr><span style="color:#15b01a;"><i class="fas fa-fw fa-check"></i> Installed</span> <!--<input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;">--></nobr>
                 {% elif layer.status == 2 %}
                     <nobr><span style="color:#f97306;">Queued</span></nobr>
                 {% elif layer.status == 3 %}
-                    <nobr><span style="color:#f97306;">Processing</span></nobr>
+                    <nobr><span style="color:#f97306;">{% if layer.info %}{{ layer.info }}{% else %}Processing{%endif%}</span></nobr>
                 {% elif layer.status == 4 %}
                     <nobr><span style="color:#aaa;">Install failed</span>
                     <input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;"></nobr>
@@ -78,23 +68,4 @@
 {% endblock %}
 
 {% block footjs %}
-<script>
-/*
-$(document).ready(function() {
-    (function status() {
-      $.ajax({
-        url: '/status.json', 
-        success: function(data) {
-          $.each(data, function(thing) {
-            $("div#status-"+thing).attr("class","status-"+data[thing])
-          })
-        },
-        complete: function() {
-          setTimeout(status, 2000);
-        }
-      });
-    })();
-});
-*/
-</script>
 {% endblock %}

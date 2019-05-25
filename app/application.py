@@ -10,6 +10,7 @@ import copy
 import markdown
 import tempfile
 
+from threading import Timer
 from glob import glob
 from functools import wraps
 from io import StringIO, BytesIO
@@ -50,12 +51,23 @@ class ConfigError(Exception):
 class ApplicationError(Exception):
     pass
 
+class InstallTerminated(Exception):
+    pass
+
+class InstallFailed(Exception):
+    pass
+
 if 'POSTGIS_BASELAYERS_WORKDIR' not in os.environ:
     os.environ['POSTGIS_BASELAYERS_WORKDIR'] = '/opt/postgis-baselayers'
 
 # Create our SqliteHuey instance
 huey_file = os.path.join(os.environ['POSTGIS_BASELAYERS_WORKDIR'], 'huey.db')
-huey = SqliteHuey(filename=huey_file)
+def get_huey(reset=False):
+    if reset:
+        os.remove(huey_file)
+    return SqliteHuey(filename=huey_file)
+
+huey = get_huey()
 
 # Function to fetch a database connection
 def get_db():
@@ -124,6 +136,7 @@ def update():
           name varchar(256) NOT NULL,       -- eg. 'airports'
           dataset_name varchar(256) REFERENCES postgis_baselayers.dataset(name),
           status int DEFAULT 0 NOT NULL,    -- 0: not installed; 1: installed; 2: queued; 3: working 4: error
+          info varchar(512) DEFAULT '',     -- additional status info 
           metadata json NOT NULL            -- flexible column for later use
         );
         CREATE TABLE IF NOT EXISTS postgis_baselayers.log (
@@ -132,7 +145,7 @@ def update():
           layer_key varchar(128) REFERENCES postgis_baselayers.layer(key),
           task_id varchar(128) NOT NULL, 
           target varchar(128) NOT NULL,     -- eg: 'install' or 'uninstall'
-          descr varchar(128),               -- eg: 'install successful'
+          info varchar(512),                -- additional status info
           log TEXT
         );
     """)
@@ -142,10 +155,7 @@ def update():
     metadata_path = os.path.join(app.root_path, "datasets", "*", "metadata.json")
     for metadata_file in glob(metadata_path):
         with open(metadata_file) as f:
-            print("next dataset:{}".format(metadata_file))
             dataset = json.load(f)
-            
-            print(dataset)
             cur.execute("""
                 INSERT INTO postgis_baselayers.dataset (name, metadata) 
                 VALUES (%s, %s) 
@@ -171,6 +181,11 @@ def update():
     message = "Update/initialization completed."
     return render_template('update.html', **locals())
 
+@app.route('/reset')
+def reset():
+    huey = get_huey(reset=True)
+    return "Reset huey"
+
 @app.route('/')
 def index():
     cur = g.conn.cursor()
@@ -179,7 +194,8 @@ def index():
     # status information for the application. If it doesn't exist (for example
     # when the app is accessed for the first time) then redirect to the 
     # 'update' view, where this schema and tables will be updates/initialized
-    # automatically.
+    # automatically for the first time. The update view then redirects back
+    # to the index page.
     cur.execute("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'postgis_baselayers');")
     res = cur.fetchone()
     if not res[0]:
@@ -192,6 +208,7 @@ def index():
             layer.key,
             layer.dataset_name as dataset, 
             layer.name as layer,
+            layer.info as info,
             layer.status,
             layer.metadata as layer_metadata,
             dataset.metadata as dataset_metadata
@@ -217,7 +234,8 @@ def index():
 @app.route("/install", methods=['POST'])
 def install():
     """
-    TODO: Validate input before passing to queue
+    TODO: Validate input before passing to queue, and return/flash error 
+          otherwise.
     """
     cur = g.conn.cursor()
     valid_targets = ('install', 'uninstall')
@@ -242,7 +260,7 @@ def logs(task_id=None):
     if not task_id:
         cur.execute("""
             SELECT 
-                created, descr, task_id
+                created, info, task_id
             FROM 
                 postgis_baselayers.log
             ORDER BY 
@@ -252,7 +270,7 @@ def logs(task_id=None):
     else:
         cur.execute("""
             SELECT 
-                created, descr, task_id, log
+                created, info, task_id, log
             FROM 
                 postgis_baselayers.log
             WHERE 
@@ -274,81 +292,48 @@ def dataset(dataset_name):
     cur = g.conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
         SELECT 
-            name, status, metadata 
+            layer.key,
+            layer.dataset_name as dataset, 
+            layer.name as layer,
+            layer.info as info,
+            layer.status,
+            layer.metadata as layer_metadata,
+            dataset.metadata as dataset_metadata
         FROM 
-            postgis_baselayers.postgis_baselayers 
+            postgis_baselayers.layer 
+        LEFT JOIN 
+            postgis_baselayers.dataset 
+        ON 
+            layer.dataset_name=dataset.name
         WHERE 
-            name=%s 
-        LIMIT 1;
+            layer.dataset_name=%s 
     """, (dataset_name,))
-    dataset = cur.fetchone()
+    layers = cur.fetchall()
 
     base_dir = os.path.join(app.root_path, "datasets", dataset_name)
+
     with open(os.path.join(base_dir, "README.md")) as f:
         readme = Markup(markdown.markdown(f.read()))
 
-    log = {}
+    with open(os.path.join(base_dir, "metadata.json")) as f:
+        dataset = json.load(f)
 
     return render_template("dataset.html", **locals())
 
-# @app.route("/dataset/<dataset_name>/modify", methods=['POST'])
-# def enable(dataset_name):
-#     """
-#     Installs a dataset
-#     """
-#     cur = g.conn.cursor() 
-#     action = request.values.get("action", None)
-
-#     if action == 'Install':
-#         task = dataset_action(dataset_name, 'install')
-
-#     if action == 'Uninstall' or action == 'Clean':
-#         task = dataset_action(dataset_name, 'clean')
-
-#     cur.execute("UPDATE postgis_baselayers.postgis_baselayers SET status=%s WHERE name=%s;", ('2', dataset_name))
-#     g.conn.commit()
-
-#     return redirect(url_for('dataset', dataset_name=dataset_name))
-
-@app.route("/dataset/<dataset_name>/<task_id>/log")
-def log(dataset_name, task_id):
-    cur = g.conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("""
-        SELECT 
-            name, created, descr, task, log 
-        FROM 
-            postgis_baselayers.postgis_baselayers_log 
-        WHERE 
-            name=%s AND
-            task=%s
-        ORDER BY 
-            created DESC 
-        LIMIT 1
-    """,(dataset_name, task_id))
-    log = cur.fetchone()
-
-    return render_template("log.html", **locals())
-
-
 @huey.task(context=True)
-def run_task(key, target, task=None):
+def run_task(key, target, task=None, timeout=1800):
     """
-    This is a huey task for enabling a certain dataset. The steps involved in
-    this are two-fold. In the directory containing the metadata file, we will:
+    Run a task
 
-
-    1. Download the dataset by running 'make download'
-    2. Install the dataset by running 'make install'
-
-    If 'make' returns with code 0 we know everything has worked ok.
+    TODO: Validate key and target
     """
     (dataset, layer) = key.split(".")
     status = None
     message = ''
 
     # Lock the task based on the dataset name. That way no more than one 
-    # task can be run for any dataset (like installing and cleaning it at the 
-    # same time, or running two installs simultaneously)
+    # task can be run for any dataset (like installing and uninstalling it at 
+    # the same time, or running two installs simultaneously)
     with huey.lock_task(key):
 
         logger = logging.getLogger("task_logger")
@@ -390,36 +375,96 @@ def run_task(key, target, task=None):
             subprocess_env['POSTGRES_OGR'] = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"'.format(**os.environ)
 
             # Run make
-            logger.info(f"Running 'make -f {makefile} {target}'...")
-            output = subprocess.check_output(["/usr/bin/make", "-f", makefile, target], env=subprocess_env, cwd=temp_dir.name, stderr=subprocess.STDOUT, shell=False, universal_newlines=True, timeout=1200)
-            logger.info(output)
+            cmd = ["/usr/bin/make", "-f", makefile, target]
+            logger.info(f"Running subprocess '{cmd}'")
 
-            if target == 'install':
-                status = 1
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, 
+                                            stderr=subprocess.PIPE, 
+                                            env=subprocess_env, 
+                                            cwd=temp_dir.name, 
+                                            shell=False, 
+                                            universal_newlines=True)
 
-            if target == 'uninstall':
-                status = 0
+            #TODO: The process.kill() can still take a while to complete. Maybe
+            #      start two timers, one for kill after timeout seconds, and 
+            #      one using a more rigorous approach if that's possible.
+            def process_terminator():
+                logger.error("Timer expired, killing process... (This may also take a while to complete)")
+                process.kill()
 
-        except subprocess.CalledProcessError as exc:
-            logger.error("ERROR! Subprocess failed. Return code: {} Output: {}".format(exc.returncode, exc.output))
-            message = f"Failed {target} on {key}"
+            
+            timer = Timer(timeout, process_terminator)
+
+            logger.info(f"Starting {timeout}s timer within which the installation process needs to finish.")
+            timer.start()
+            for line in iter(process.stdout.readline, b''):
+                if line:
+                    logger.info(line)
+                    if line.startswith("STATUS="):
+                        (_, info) = line.split("=", maxsplit=1)
+                        cur.execute("""
+                            UPDATE 
+                                postgis_baselayers.layer 
+                            SET info=%s 
+                            WHERE key=%s;
+                        """, (info, key))
+                        conn.commit()
+                else:
+                    break
+
+            print("Subprocess finished, wait for returncode...")
+            process.wait()
+            print("Returncode is {}".format(process.returncode))
+
+            #TODO: Do we need a wait() and communicate() here or does 
+            #      communicate() imply wait()ing?      
+            stdout, stderr = process.communicate()
+
+            if process.returncode < 0:
+                raise InstallTerminated(stderr)
+
+            if process.returncode != 0:
+                raise InstallFailed(stderr)
+
+            if process.returncode == 0:
+                message = f"Completed {target} task on {key}."
+                logger.info(message)
+                if target == 'install':
+                    status = 1
+                if target == 'uninstall':
+                    status = 0
+            
+        except InstallFailed as e:
+            logger.error("ERROR! The installation failed with a non-zero returncode. More info: {}".format(e))
+            message = f"Failed {target} on {key}. (An error occurred)"
+            status = 4
+
+        except InstallTerminated as e:
+            logger.error("ERROR! The installation was terminated, most likely because it timed out. More info: {}".format(e))
+            message = f"Failed {target} on {key}. (Process was terminated)"
             status = 4
 
         except Exception as e:
-            logger.error("ERROR! An unspecified error occurred: {}".format(e))
-            message = f"Failed {target} on {key}"
+            logger.error("ERROR! The installation failed for an unknown reason. More info: {}".format(e))
+            message = f"Failed {target} on {key}. (Unknown reason)"
             status = 4
 
         finally:
             # Destroy the temporary directory
+            logger.info("Cleaning temporary directory...")
             temp_dir.cleanup()
 
+            # Cancel any timer
+            logger.info("Cancelling timer...")
+            timer.cancel()
+
             # No matter what happens, flush the log and save in log table.
+            logger.info("Flushing and saving logs...")
             streamhandler.flush()
             cur.execute("""
                 INSERT INTO 
                     postgis_baselayers.log 
-                    (layer_key, task_id, target, descr, log) 
+                    (layer_key, task_id, target, info, log) 
                 VALUES 
                     (%s, %s, %s, %s, %s)
             """, (task.args[0], task.id, target, message, logstream.getvalue()))
@@ -434,11 +479,13 @@ def pre_exec_hook(task):
     """
     Set dataset status to '3: working' before executing task.
     """
+    logger.info("Pre-exec hook. Setting status to 3.")
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("UPDATE postgis_baselayers.layer SET status=3 WHERE key=%s;", (task.args[0],))
+    cur.execute("UPDATE postgis_baselayers.layer SET status=3 AND info='' WHERE key=%s;", (task.args[0],))
     conn.commit()
     conn.close()
+    logger.info("Done.")
 
 @huey.post_execute()
 def post_exec_hook(task, task_value, exc):
@@ -446,8 +493,14 @@ def post_exec_hook(task, task_value, exc):
     After executing task, set the dataset status to the status code returned 
     by the task.
     """
+    logger.info(f"Post-exec hook. Setting status to {task_value}.")
+    logger.info(f"Post-exec hook exception: {exc}")
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("UPDATE postgis_baselayers.layer SET status=%s WHERE key=%s;", (task_value, task.args[0]))
+    if exc:
+        logger.info("Exception found. Setting task status to error.")
+        task_value = 4
+    cur.execute("UPDATE postgis_baselayers.layer SET status=%s AND info='' WHERE key=%s;", (task_value, task.args[0]))
     conn.commit()
     conn.close()
+    logger.info("Done.")

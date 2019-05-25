@@ -1,9 +1,10 @@
 
 install: uninstall
-	@echo "Installing koeppengeiger.koeppengeiger..."
+	@echo STATUS=Downloading
 	mkdir -p src tmp
 	cd src && wget -q -i ../filelist.txt
 
+	@echo STATUS=Importing
 	# Observed 1976-2000
 	unzip -o src/1976-2000_GIS.zip -d tmp 
 	ogr2ogr tmp/period_1976_2000.shp tmp/1976-2000.shp 

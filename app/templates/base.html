@@ -24,7 +24,7 @@
           </ul>
         {% endif %}
       {% endwith %}
-        <div class="container container-fluid">
+        <div class="container">
 
 
 
@@ -36,7 +36,7 @@
           {% set active_page = active_page|default('index') -%}
           <ul class="nav nav-tabs">
             <li class="nav-item">
-              <a style="{% if layers_working or layers_waiting %}background-color:#ffffd4;{% endif %}" class="nav-link {% if active_page == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Datasets</a>
+              <a style="{% if layers_working or layers_waiting %}background-color:#ffffd4;border-bottom-color:#ffffd4;{% endif %}" class="nav-link {% if active_page == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Datasets</a>
             </li>
             <li class="nav-item">
               <a class="nav-link {% if active_page == 'logs' %}active{% endif %}" href="{{ url_for('logs') }}">Logs</a>
@@ -49,12 +49,11 @@
             <div class="notice">
                 <strong>There is work in progress, please be patient.</strong> PostGIS Baselayers is currently
                 {% if layers_working %}
-                   working on {{ layers_working | length }} task(s),
-                  {% if layers_waiting %}
-                    with another {{ layers_waiting | length }} task(s) in queue. 
+                   working on {{ layers_working | length }} task{% if layers_working | length > 1%}s{% endif %}{% if not layers_waiting %}.{% else %}
+                    with another {{ layers_waiting | length }} task{% if layers_waiting | length > 1%}s{% endif %} in queue. 
                   {% endif %}
                  {% else %}
-                    waiting to start work on {{ layers_waiting | length }} queued task(s). 
+                    preparing {{ layers_waiting | length }} queued task{% if layers_waiting | length > 1%}s{% endif %}. 
                  {% endif %}
                  You can <a href="javascript:location.reload();">reload this page</a> to update the status.
             </div>

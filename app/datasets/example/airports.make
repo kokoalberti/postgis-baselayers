@@ -4,15 +4,16 @@ install:
 
 	# Create the 'src' directory if it doesn't exist yet
 	mkdir -p src
+	@echo STATUS=Downloading
 	cd src && wget -q http://ourairports.com/data/airports.csv
 
+	@echo STATUS=Importing
 	psql $(POSTGRES_URI) -a -f create_tables.sql
 	cat src/airports.csv | psql $(POSTGRES_URI) -c "COPY example.airports (id,ident,type,name,latitude_deg,longitude_deg,elevation_ft,continent,iso_country,iso_region,municipality,scheduled_service,gps_code,iata_code,local_code,home_link,wikipedia_link,keywords) FROM stdin WITH DELIMITER ',' CSV HEADER"
 	psql $(POSTGRES_URI) -a -f create_indices.sql
 
 	# Clean up
-	rm -rf tmp src
-	@echo Done installing!
+	@echo STATUS=Complete
 
 uninstall:
 	@echo Uninstalling example.airports
