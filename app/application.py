@@ -164,9 +164,6 @@ def update():
             """, (dataset['name'], json.dumps(dataset['metadata']), json.dumps(dataset['metadata'])))
 
             for layer in dataset['layers']:
-                print("---")
-                print(layer)
-                print(json.dumps(layer['metadata']))
                 key = "{}.{}".format(dataset['name'], layer['name'])
                 cur.execute("""
                     INSERT INTO postgis_baselayers.layer (key, name, dataset_name, metadata)
@@ -174,7 +171,6 @@ def update():
                     ON CONFLICT ON CONSTRAINT layer_pkey 
                     DO UPDATE SET metadata = %s;
                 """, (key, layer['name'], dataset['name'], json.dumps(layer['metadata']), json.dumps(layer['metadata'])))
-                print("DONE!!")
             g.conn.commit()
         #message = "Update failed"
         #return render_template('update.html', **locals())
@@ -482,7 +478,7 @@ def pre_exec_hook(task):
     logger.info("Pre-exec hook. Setting status to 3.")
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("UPDATE postgis_baselayers.layer SET status=3 AND info='' WHERE key=%s;", (task.args[0],))
+    cur.execute("UPDATE postgis_baselayers.layer SET status=3, info='' WHERE key=%s;", (task.args[0],))
     conn.commit()
     conn.close()
     logger.info("Done.")
@@ -500,7 +496,7 @@ def post_exec_hook(task, task_value, exc):
     if exc:
         logger.info("Exception found. Setting task status to error.")
         task_value = 4
-    cur.execute("UPDATE postgis_baselayers.layer SET status=%s AND info='' WHERE key=%s;", (task_value, task.args[0]))
+    cur.execute("UPDATE postgis_baselayers.layer SET status=%s, info='' WHERE key=%s;", (task_value, task.args[0]))
     conn.commit()
     conn.close()
     logger.info("Done.")
