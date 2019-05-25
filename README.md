@@ -1,24 +1,38 @@
 # PostGIS Baselayers
 
-**This is a work in progress! Still hoping to improve it in the coming months, let me know if you like the idea.**
+**This is a work in progress!**
+
+**I'm currently improving the application and adding some much needed features and stability. Please check back in a few weeks for more news and updates.**
 
 PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.
 
 The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
 
-![PostGIS Baselayers Homepage](docs/img/screenshot-home.png)
+<p align="center">
+  <img src="docs/img/screenshot-home.png">
+</p>
 
 ## Why
 
-For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS or QGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize them. It's nice to have all these datasets available in a single PostGIS database that can be contributed to as well by others.
+For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS or QGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize them and let you get up and running quickly with a large collection of open vector datasets.
 
 Installation of new datasets is a breeze with the installers, and having all the datasets in a single database lets you do all sort of fun queries across different datasets.
 
 ## Quick Start
 
-Clone the repository with `https://github.com/kokoalberti/postgis-baselayers.git`, build the containers with `docker-compose build`, and start the service with `docker-compose up`. 
+Clone the repository: 
 
-Once running, visit the management application in your browser at `http://localhost:8003/` and choose which datasets you want to install into the database. 
+	git clone https://github.com/kokoalberti/postgis-baselayers.git
+
+Then build the containers: 
+
+    docker-compose build
+
+And start the service with:
+
+    docker-compose up
+
+Once running, visit the management application in your browser at `http://localhost:8003/` and choose which datasets you want to install into the database. Some of them are quite large (in excess of 1Gb) so make sure that you have plenty of bandwidth/storage space available.
 
 ## Accessing Data
 

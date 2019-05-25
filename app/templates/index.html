@@ -1,54 +1,71 @@
 {% extends "base.html" %}
+{% set active_page = "index" %}
 {% block content %}
+    <div class="intro">
+        <p>
+        Welcome to PostGIS Baselayers. The following datasets are available:
+        </p>
 
+    </div>
 
-<div class="container">
+    <form id="install-form" action="{{ url_for('install') }}" method="POST">
+    <table id="dataset-table" class="table table-bordered">
 
-    <h1 class="nav"><tt><a href="/" style="text-decoration:none;">PostGIS Baselayers</a></tt></h1>
-
-    <table class="table table-bordered">
-    <thead class="thead-light">
-    <tr>
-        <th>Dataset</th>
-        <th>Description</th>
-        <th class="status-column">Status</th>
-
-    </tr>
-    </thead>
-
-    {% for dataset in datasets %}
     <tbody>
-    <tr>
-    	<td><a href="{{url_for('dataset', dataset_name=dataset.name)}}"><tt>{{ dataset.name }}</tt></a></td>
-        
-        <td>{{ dataset.metadata.get("description","") }}</td>
-        <td class="status-column"><div id="status-{{dataset.name}}" class="status-{{dataset.status}}"><i class="fas fa-circle status-icon"></i></div></td>
-    </tr>
-    </tbody>
+
+    {% for layer in layers %}
+        {% if loop.changed(layer.dataset) %}
+        <tr style="background-color:#f5f5f5;">
+            <td style="width:0%;padding-right:0px;">
+                <i class="fas fa-fw fa-layer-group"></i>
+            </td>
+            <td>
+                <a href="{{ url_for('dataset', dataset_name=layer.dataset) }}"><tt><strong>{{ layer.dataset }}</strong></tt></a>
+            </td>        
+            <td colspan="2">
+                 <strong>{{ layer.dataset_metadata.description }}</strong>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td style="width:0%;padding-right:0px;">
+                <i class="fas fa-fw fa-map-marker-alt" style="color:#ccc;"></i>
+            </td>
+            <td>
+                <div class="truncate">{{ layer.layer }}</div>
+            </td>
+            <td style="width:100%">{{ layer.layer_metadata.description }}</td>
+            <td class="text-right">
+                {% if layer.status == 0 %}
+                    <nobr><input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;"></nobr>
+                {% elif layer.status == 1 %}
+                    <nobr><span style="color:#15b01a;"><i class="fas fa-fw fa-check"></i> Installed</span> <!--<input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;">--></nobr>
+                {% elif layer.status == 2 %}
+                    <nobr><span style="color:#f97306;">Queued</span></nobr>
+                {% elif layer.status == 3 %}
+                    <nobr><span style="color:#f97306;">{% if layer.info %}{{ layer.info }}{% else %}Processing{%endif%}</span></nobr>
+                {% elif layer.status == 4 %}
+                    <nobr><span style="color:#aaa;">Install failed</span>
+                    <input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;"></nobr>
+                {% endif %}
+            </td>
+        </tr>
     {% endfor %}
+    </tbody>
+
+
     </table>
+    
+
+    <div class="text-right">
+        <input class="btn btn-primary" type="submit" value="Install Selected Datasets">
+    </div>
+
+    </form>
+
 </div>
 
 {% endblock %}
 
 {% block footjs %}
-<script>
-/*
-$(document).ready(function() {
-    (function status() {
-      $.ajax({
-        url: '/status.json', 
-        success: function(data) {
-          $.each(data, function(thing) {
-            $("div#status-"+thing).attr("class","status-"+data[thing])
-          })
-        },
-        complete: function() {
-          setTimeout(status, 2000);
-        }
-      });
-    })();
-});
-*/
-</script>
 {% endblock %}

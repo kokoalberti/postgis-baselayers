@@ -1,11 +1,16 @@
 {
-	"name":"koeppengeiger",
-	"description":"Köppen-Geiger climate classifications",
-	"version":"1",
-	"attribution":"TODO",
-	"url": "http://koeppen-geiger.vu-wien.ac.at/shifts.htm",
-	"docs": "https://data.geofolio.org/gdata/koeppengeiger.html",
-	"citations": [
-		"Rubel, F., and M. Kottek, 2010: Observed and projected climate shifts 1901-2100 depicted by world maps of the Köppen-Geiger climate classification. Meteorol. Z., 19, 135-141. DOI: 10.1127/0941-2948/2010/0430."
-	]
+    "name": "koeppengeiger",
+    "metadata": {
+        "description": "Köppen-Geiger climate classifications",
+        "attribution": ["Rubel, F., and M. Kottek, 2010: Observed and projected climate shifts 1901-2100 depicted by world maps of the Köppen-Geiger climate classification. Meteorol. Z., 19, 135-141. DOI: 10.1127/0941-2948/2010/0430."],
+        "url":""
+    },
+    "layers": [
+        {
+            "name": "koeppengeiger",
+            "metadata": {
+                "description": "Current and future Köppen-Geiger climate classifications."
+            }
+        }
+    ]
 }

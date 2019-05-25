@@ -1,0 +1,102 @@
+h1.nav {
+    padding:20px 0px 20px 0px;
+    font-size:1.6em;
+}
+h1 {
+    font-size:1.6em;
+}
+h2 {
+    font-size:1.4em;
+}
+h3 {
+    font-size:1.1em;
+}
+
+i.status-icon { 
+    color:#aaaaaa; 
+    margin-left:3px;
+}
+i.status-icon::after {
+    font-family:monospace;
+    font-size:0.9em;
+    font-weight:400;
+    line-height:0.9em;
+}
+div.status-0 i.status-icon  { color:#aaaaaa; }
+div.status-0 i.status-icon::after { content: " Unknown"; }
+div.status-1 i.status-icon  { color:#aaaaaa; }
+div.status-1 i.status-icon::after { content: " Disabled"; }
+div.status-2 i.status-icon  { color:#fac205; }
+div.status-2 i.status-icon::after { content: " Queued..."; }
+div.status-3 i.status-icon  { color:#fac205; }
+div.status-3 i.status-icon::after { content: " Working..."; }
+div.status-4 i.status-icon  { color:#fac205; }
+div.status-4 i.status-icon::after { content: " Installing..."; }
+div.status-5 i.status-icon  { color:#e50000; }
+div.status-5 i.status-icon::after { content: " Error"; }
+div.status-6 i.status-icon  { color:#15b01a; }
+div.status-6 i.status-icon::after { content: " Installed"; }
+.status-column {
+    width:200px;
+}
+a, a:hover {
+  text-decoration:none;
+}
+ul#log-links {
+  padding-left:17px;
+}
+ul#log-links a {
+  color:#ccc;
+}
+ul#log-links a:hover {
+  color:#aaa;
+}
+code, pre {
+  color:#444;
+
+}
+pre {
+  background-color:#f5f5f5;
+  padding:7px;
+}
+
+table#dataset-table {
+    font-size:11pt;
+}
+span.sub-th {
+    color:#aaa;
+}
+h1 a, h1 a:hover {
+    text-decoration:none;
+}
+div.truncate {
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family:monospace;
+}
+td {
+  border-left:0px !important;
+  border-right:0px !important;
+}
+div.intro {
+  border-left:1px solid rgb(222, 226, 230);
+  border-right:1px solid rgb(222, 226, 230);
+  padding:15px;
+  padding-top:32px;
+  color:#333
+}
+div.notice {
+  background-color:#ffffd4;
+  color:#f97306;
+  border-left:1px solid rgb(222, 226, 230);
+  border-right:1px solid rgb(222, 226, 230);
+  border-bottom:1px solid rgb(222, 226, 230);
+  padding:15px;
+  padding-top:20px;
+  padding-bottom:20px;
+}
+div.notice i {
+  margin-top:-4px;
+}

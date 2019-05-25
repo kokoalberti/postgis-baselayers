@@ -1,6 +1,16 @@
 {
-	"name":"example",
-	"description":"Example dataset that contains some random points.",
-	"version":"1",
-	"attribution":""
+    "name": "example",
+    "metadata": {
+        "description": "Example dataset.",
+        "attribution": ["Public domain airports data from http://ourairports.com/data/"],
+        "url": ""
+    },
+    "layers": [
+        { 
+            "name": "airports", 
+            "metadata": {
+                "description": "Point locations of airports around the world."
+            }
+        }
+    ]
 }

@@ -1,1 +1,0 @@
-http://ourairports.com/data/airports.csv

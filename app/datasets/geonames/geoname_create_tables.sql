@@ -1,5 +1,4 @@
-drop table if exists geoname;
-create table geoname (
+CREATE TABLE geonames.geoname (
     geonameid   int,
     name varchar(200),
     asciiname varchar(200),
@@ -20,8 +19,7 @@ create table geoname (
     timezone varchar(40),
     moddate date
  );
-drop table if exists alternatename;
-create table alternatename (
+CREATE TABLE geonames.alternatename (
     alternatenameId int,
     geonameid int,
     isoLanguage varchar(7),
@@ -31,8 +29,7 @@ create table alternatename (
     isColloquial boolean,
     isHistoric boolean
  );
-drop table if exists countryinfo;
-create table "countryinfo" (
+CREATE TABLE geonames.countryinfo (
     iso_alpha2 char(2),
     iso_alpha3 char(3),
     iso_numeric integer,

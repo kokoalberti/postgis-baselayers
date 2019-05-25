@@ -4,7 +4,7 @@ The GADM dataset provides administrative spatial data for all countries and thei
 
 ## Description
 
-The GADM dataset is available under the `gadm` schema, and consists of three tables: `gadm_0`, `gadm_1` and `gadm_2`, representing three highest levels of administrative divisions.
+The GADM dataset is available under the `gadm` schema, and consists of tables named `level0` through `level5`  containing global administrative divisions at leveral levels.
 
 ## Examples
 
@@ -15,10 +15,10 @@ Query:
     SELECT 
          name_0
     FROM 
-         gadm.gadm_0
+         gadm.level0
     WHERE 
          ST_Intersects(
-            gadm_0.wkb_geometry, 
+            geom, 
             ST_SetSRID(ST_Point(-71.1043443253471, 42.3150676015829), 4326)
          );
 
@@ -36,7 +36,7 @@ Query:
     SELECT 
         name_1 AS state 
     FROM 
-        gadm.gadm_1 
+        gadm.level1
     WHERE 
         name_0 = 'United States';
 
@@ -62,10 +62,10 @@ Query:
     SELECT 
         name_0 AS country
     FROM 
-        gadm.gadm_0 
+        gadm.level0 
     WHERE 
          ST_Intersects(
-            gadm_0.wkb_geometry, 
+            level0.geom, 
             ST_SetSRID(ST_GeomFromText('POLYGON((5.22 49.41,6.69 50.12,6.79 49.29,5.22 49.41))'), 4326)
          );
 

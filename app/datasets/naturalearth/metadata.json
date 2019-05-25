@@ -1,6 +1,40 @@
 {
-	"name":"naturalearth",
-	"description":"Selection of datasets from Natural Earth",
-	"version":"1",
-	"attribution":""
+    "name": "naturalearth",
+    "metadata": {
+        "description": "Datasets from Natural Earth",
+        "attribution": ["Data from Natural Earth. Free vector and raster map data at naturalearthdata.com."],
+        "url": "http://www.naturalearthdata.com/"
+    },
+    "layers": [
+        {
+            "name": "ne_10m_admin_0_countries",
+            "metadata": {
+                "description": "Natural Earth Admin 0 Countries"
+            }
+        },
+        {
+            "name": "ne_10m_admin_1_states_provinces",
+            "metadata": {
+                "description": "Natural Earth Admin 1 States and Provinces"
+            }
+        }, 
+        {
+            "name": "ne_10m_populated_places",
+            "metadata": {
+                "description": "Natural Earth Populated Places"
+            }
+        },
+        {
+            "name": "ne_10m_lakes",
+            "metadata": {
+                "description": "Natural Earth Lakes"
+            }
+        }, 
+        {
+            "name": "ne_10m_rivers",
+            "metadata": {
+                "description": "Natural Earth Rivers"
+            }
+        }
+    ]
 }
