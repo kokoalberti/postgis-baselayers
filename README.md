@@ -20,7 +20,11 @@ Installation of new datasets is a breeze with the installers, and having all the
 
 ## Quick Start
 
-Clone the repository from `https://github.com/kokoalberti/postgis-baselayers.git` and build the containers: 
+Clone the repository: 
+
+	git clone https://github.com/kokoalberti/postgis-baselayers.git
+
+Then build the containers: 
 
     docker-compose build
 
