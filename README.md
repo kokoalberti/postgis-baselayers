@@ -2,7 +2,7 @@
 
 **This is a work in progress!**
 
-**I'm currently overhauling the application and adding some much needed features. Please check back in a few weeks for more news and updates.**
+**I'm currently improving the application and adding some much needed features and stability. Please check back in a few weeks for more news and updates.**
 
 PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.
 
@@ -18,7 +18,13 @@ Installation of new datasets is a breeze with the installers, and having all the
 
 ## Quick Start
 
-Clone the repository with `https://github.com/kokoalberti/postgis-baselayers.git`, build the containers with `docker-compose build`, and start the service with `docker-compose up`. 
+Clone the repository from `https://github.com/kokoalberti/postgis-baselayers.git` and build the containers: 
+
+    docker-compose build
+
+And start the service with:
+
+    docker-compose up
 
 Once running, visit the management application in your browser at `http://localhost:8003/` and choose which datasets you want to install into the database. Some of them are quite large (in excess of 1Gb) so make sure that you have plenty of bandwidth/storage space available.
 
