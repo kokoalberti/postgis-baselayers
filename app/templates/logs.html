@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% set active_page = "logs" %}
+{% block content %}
+
+    <div class="intro">
+        {% if not logs %}
+            <p>No logs found</p>
+        {% endif %}
+        {% if task_id %}
+            <p>Detailed log</p>
+        {% endif %}
+        {% if logs | length > 1 %}
+            <p>Listing {{ logs | length }} log(s)</p>
+        {% endif %}
+    </div>
+    {% if logs %}
+        <table class="table table-bordered" style="font-size:11pt;" >
+        <tbody style="border-top:0px;">
+        {% for log in logs %}
+            <tr>
+                <td><nobr><tt><a href="{{ url_for('logs', task_id=log.task_id) }}">{{ log.created.strftime("%Y-%m-%d %H:%M:%S") }}</a></tt></nobr></td>
+                <td style="width:100%"><tt>{{ log.descr}}</tt></td>
+            </tr>
+            {% if task_id %}
+            <tr><td colspan="2"><pre style="font-size:8pt;margin-bottom:0px;">{{ logs[0].log }}</pre></td></tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        No logs found.
+    {% endif %}
+{% endblock %}
+
+{% block footjs %}
+{% endblock %}

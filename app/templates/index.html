@@ -1,29 +1,15 @@
 {% extends "base.html" %}
+{% set active_page = "index" %}
 {% block content %}
-
-
-<div class="container container-fluid">
-
-    <h1 class="nav"><tt><a href="/">PostGIS Baselayers</a></tt></h1>
-
-
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a class="nav-link active" href="#">Datasets</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Logs</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Settings</a>
-      </li>
-    </ul>
-
-    <div style="border-left:1px solid rgb(222, 226, 230);border-right:1px solid rgb(222, 226, 230);padding:15px;color:#333">
+    <div class="intro">
         <p>
         There are 6 installed layers.
         </p>
+
+
     </div>
+
+    <form id="install-form" action="{{ url_for('install') }}" method="POST">
     <table id="dataset-table" class="table table-bordered">
     <!--
     <thead class="thead-light">
@@ -35,28 +21,58 @@
     </tr>
     </thead>
     -->
-
     <tbody>
+
     {% for layer in layers %}
+        {% if loop.changed(layer.dataset) %}
         <tr style="background-color:#e9ecef;">
+            <td style="width:0%;padding-right:0px;">
+                <i class="fas fa-fw fa-layer-group"></i>
+            </td>
             <td>
-                <i class="fas fa-fw fa-layer-group"></i> <a href=""><tt><strong>{{ layer.dataset }}</strong></tt></a></td>        
-            <td colspan="3">
+                <a href=""><tt><strong>{{ layer.dataset }}</strong></tt></a>
+            </td>        
+            <td colspan="2">
                  <strong>{{ layer.dataset_metadata.description }}</strong>
             </td>
         </tr>
+        {% endif %}
         <tr>
-            <td>
-                <div class="truncate"><i class="fas fa-fw fa-map-marker-alt" style="color:#ccc;"></i> {{ layer.layer }}</div>
+            <td style="width:0%;padding-right:0px;">
+                <i class="fas fa-fw fa-map-marker-alt" style="color:#ccc;"></i>
             </td>
-            <td>{{ layer.layer_metadata.description }}</td>
-            <td class="status-column"><div id="status-{{layer.name}}" class="status-{{layer.status}}"><i class="fas fa-circle status-icon"></i></div></td>
+            <td>
+                <div class="truncate">{{ layer.layer }}</div>
+            </td>
+            <td style="width:100%">{{ layer.layer_metadata.description }}</td>
+            <td class="text-right">
+                {% if layer.status == 0 %}
+                    <nobr><input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;"></nobr>
+                {% elif layer.status == 1 %}
+                    <nobr><span style="color:#15b01a;"><i class="fas fa-fw fa-check"></i> Installed</span></nobr>
+                {% elif layer.status == 2 %}
+                    <nobr><span style="color:#f97306;">Queued</span></nobr>
+                {% elif layer.status == 3 %}
+                    <nobr><span style="color:#f97306;">Processing</span></nobr>
+                {% elif layer.status == 4 %}
+                    <nobr><span style="color:#aaa;">Install failed</span>
+                    <input type="checkbox" name="{{layer.key}}" value="install" style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;"></nobr>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
 
 
     </table>
+    
+
+    <div class="text-right">
+        <input class="btn btn-primary" type="submit" value="Install Selected Datasets">
+    </div>
+
+    </form>
+
 </div>
 
 {% endblock %}

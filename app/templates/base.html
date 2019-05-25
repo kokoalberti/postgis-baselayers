@@ -15,16 +15,59 @@
       <link rel="stylesheet" href="/static/css/style.css">
     </head>
     <body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class=flashes>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class=flashes>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+        <div class="container container-fluid">
+
+
+
+          <h1 class="nav"><tt><a href="/">PostGIS Baselayers</a></tt></h1>
+
+
+          
+
+          {% set active_page = active_page|default('index') -%}
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a style="{% if layers_working or layers_waiting %}background-color:#ffffd4;{% endif %}" class="nav-link {% if active_page == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Datasets</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if active_page == 'logs' %}active{% endif %}" href="{{ url_for('logs') }}">Logs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if active_page == 'settings' %}active{% endif %}" href="{{ url_for('settings') }}">Settings</a>
+            </li>
+          </ul>
+          {% if layers_working or layers_waiting %}
+            <div class="notice">
+                <strong>There is work in progress, please be patient.</strong> PostGIS Baselayers is currently
+                {% if layers_working %}
+                   working on {{ layers_working | length }} task(s),
+                  {% if layers_waiting %}
+                    with another {{ layers_waiting | length }} task(s) in queue. 
+                  {% endif %}
+                 {% else %}
+                    waiting to start work on {{ layers_waiting | length }} queued task(s). 
+                 {% endif %}
+                 You can <a href="javascript:location.reload();">reload this page</a> to update the status.
+            </div>
+          {% endif %}
+
+          {% block content %}{% endblock %}
+
+
+
+        </div>
+        <div class="container container-fluid text-center" style="padding:15px;">
+          <small>PostGIS Baselayers - <a href="https://github.com/kokoalberti/postgis-baselayers">https://github.com/kokoalberti/postgis-baselayers</a></small>
+        </div>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

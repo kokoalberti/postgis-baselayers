@@ -7,7 +7,7 @@
     },
     "layers": [
         { 
-            "name": "geonames",
+            "name": "geoname",
             "metadata": {
                 "description": "Geonames main placename database." 
             }

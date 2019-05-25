@@ -1,5 +1,5 @@
-drop table if exists airports;
-create table airports (
+DROP TABLE IF EXISTS example.airports;
+CREATE TABLE example.airports (
     id integer,
     ident varchar(256),
     type varchar(256),
