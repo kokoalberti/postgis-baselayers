@@ -366,6 +366,7 @@ def run_task(key, target, task=None, timeout=1800):
             subprocess_env['POSTGRES_OGR'] = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"'.format(**os.environ)
 
             # Run make
+            makefile = os.path.join(temp_dir.name, f"{layer}.make")
             cmd = ["/usr/bin/make", "-f", makefile, target]
             logger.info(f"Running subprocess '{cmd}'")
 
