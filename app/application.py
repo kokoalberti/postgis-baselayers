@@ -417,6 +417,7 @@ def run_task(key, target, task=None, timeout=1800):
                     logger.info(line)
                     if line.startswith("STATUS="):
                         (_, info) = line.split("=", maxsplit=1)
+                        info = (info[:500] + '(...)') if len(info) > 500 else info
                         cur.execute("""
                             UPDATE 
                                 postgis_baselayers.layer 
