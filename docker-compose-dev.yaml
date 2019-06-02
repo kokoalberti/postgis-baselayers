@@ -9,7 +9,6 @@ services:
       - default
     volumes:
       - ./app:/app
-      - postgis_baselayers_volume:/opt/postgis-baselayers
     env_file: .env
     environment:
       - FLASK_ENV=development
@@ -29,7 +28,6 @@ services:
       - default
     volumes:
       - ./app:/app
-      - postgis_baselayers_volume:/opt/postgis-baselayers
     env_file: .env
     environment: 
       - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
@@ -53,6 +51,5 @@ networks:
     external: false
 volumes:
   postgis_database_volume:
-  postgis_baselayers_volume:
 
 

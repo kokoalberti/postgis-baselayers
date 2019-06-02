@@ -7,8 +7,6 @@ services:
     container_name: postgis-baselayers
     networks:
       - default
-    volumes:
-      - postgis_baselayers_volume:/opt/postgis-baselayers
     env_file: .env
     environment:
       - GUNICORN_CMD_ARGS=--bind=0.0.0.0:8080 --workers=1
@@ -32,4 +30,3 @@ networks:
   default:
 volumes:
   postgis_database_volume:
-  postgis_baselayers_volume:
