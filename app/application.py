@@ -385,7 +385,7 @@ def run_task(key, target, task=None, timeout=1800):
             # subprocesses.
             subprocess_env = copy.deepcopy(os.environ)
             #subprocess_env['PGOPTIONS'] = "-c search_path={},public".format(key)
-            subprocess_env['POSTGRES_URI'] = "postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}".format(**os.environ)
+            subprocess_env['POSTGRES_URI'] = "postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
             subprocess_env['POSTGRES_OGR'] = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"'.format(**os.environ)
 
             # Run make
@@ -476,13 +476,25 @@ def run_task(key, target, task=None, timeout=1800):
             # No matter what happens, flush the log and save in log table.
             logger.info("Flushing and saving logs...")
             streamhandler.flush()
+            log_content = logstream.getvalue()
+
+            # Remove passwords from logfile
+            postgres_uri_secret = "postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
+            postgres_uri_safe = "postgresql://{POSTGRES_USER}:XXXXXX@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
+            log_content = log_content.replace(postgres_uri_secret, postgres_uri_safe)
+
+            postgres_ogr_secret = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"'.format(**os.environ)
+            postgres_ogr_safe = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password=XXXXXX"'.format(**os.environ)
+            log_content = log_content.replace(postgres_ogr_secret, postgres_ogr_safe)
+
+
             cur.execute("""
                 INSERT INTO 
                     postgis_baselayers.log 
                     (layer_key, task_id, target, info, log) 
                 VALUES 
                     (%s, %s, %s, %s, %s)
-            """, (task.args[0], task.id, target, message, logstream.getvalue()))
+            """, (task.args[0], task.id, target, message, log_content))
             conn.commit()
             conn.close()
 
