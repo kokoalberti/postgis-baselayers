@@ -234,18 +234,29 @@ def install():
           otherwise.
     """
     cur = g.conn.cursor()
+    # Valid targets are:
     valid_targets = ('install', 'uninstall')
+
+    # Make a list of valid keys
+    cur.execute("SELECT key FROM postgis_baselayers.layer")
+    valid_keys = [_[0] for _ in cur.fetchall()]
+
     for key, target in request.form.items():
-        if target in valid_targets:
-            try:
-                task = run_task(key, target)
-                cur.execute("UPDATE postgis_baselayers.layer SET status=2 WHERE key=%s;", (key, ))
-                g.conn.commit()
-            except:
-                g.conn.rollback()
-                raise ApplicationError("Unexpected error while creating task.")
-        else:
+
+        if target not in valid_targets:
             raise ApplicationError(f"Request contains invalid target: '{target}'")
+
+        if key not in valid_keys:
+            raise ApplicationError(f"Request contains invalid key: '{key}'")
+
+        try:
+            task = run_task(key, target)
+            cur.execute("UPDATE postgis_baselayers.layer SET status=2 WHERE key=%s;", (key, ))
+            g.conn.commit()
+        except:
+            g.conn.rollback()
+            raise ApplicationError("Unexpected error while creating task.")
+
     return redirect(url_for('index'))
 
 @app.route("/logs/")
