@@ -492,6 +492,11 @@ def post_exec_hook(task, task_value, exc):
     if exc:
         logger.info("Exception found. Setting task status to error.")
         task_value = 4
+
+    if not task_value:
+        logger.info("Task completed but did not return a value. Settings task status to error.")
+        task_value = 4
+        
     cur.execute("UPDATE postgis_baselayers.layer SET status=%s, info='' WHERE key=%s;", (task_value, task.args[0]))
     conn.commit()
     conn.close()
