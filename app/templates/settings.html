@@ -2,8 +2,23 @@
 {% set active_page = "settings" %}
 {% block content %}
 <div class="intro" style="border-bottom:1px solid rgb(222, 226, 230);">
-    <p>No settings to configure yet.</p>
+    <hr/>
+    <h2>Uninstall Datasets</h2>
+    <p>
+        Select dataset to uninstall:
+    </p>
+    <form action="{{ url_for('install') }}" method="POST">
+        <table class="table table-bordered">
+        {% for layer in layers %}
+            <tr><td><tt>{{layer.key}}</tt></td><td class="text-right"><input type="checkbox" name="{{layer.key}}" value="uninstall" /></td></tr>
+        {% endfor %}
+        </table>
+        <p class="text-right">
+        <input class="btn btn-primary" type="submit" value="Uninstall Selected Datasets">
+        </p>
+    </form>
 </div>
+
 {% endblock %}
 
 {% block footjs %}

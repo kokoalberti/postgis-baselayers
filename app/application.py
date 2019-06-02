@@ -245,7 +245,7 @@ def install():
                 g.conn.rollback()
                 raise ApplicationError("Unexpected error while creating task.")
         else:
-            raise ApplicationError("Request contains invalid target.")
+            raise ApplicationError(f"Request contains invalid target: '{target}'")
     return redirect(url_for('index'))
 
 @app.route("/logs/")
@@ -278,7 +278,19 @@ def logs(task_id=None):
 
 @app.route("/settings/")
 def settings():
-    return render_template("settings.html")
+    cur = g.conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("""
+        SELECT 
+            layer.key as key,
+            layer.dataset_name as dataset, 
+            layer.name as layer
+        FROM 
+            postgis_baselayers.layer 
+        ORDER BY 
+            layer.key
+    """)
+    layers = cur.fetchall()
+    return render_template("settings.html", **locals())
 
 @app.route("/dataset/<dataset_name>/")
 def dataset(dataset_name):
@@ -493,7 +505,7 @@ def post_exec_hook(task, task_value, exc):
         logger.info("Exception found. Setting task status to error.")
         task_value = 4
 
-    if not task_value:
+    if task_value is None:
         logger.info("Task completed but did not return a value. Settings task status to error.")
         task_value = 4
         
