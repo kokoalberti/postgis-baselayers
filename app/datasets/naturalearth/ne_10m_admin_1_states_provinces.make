@@ -7,5 +7,6 @@ install: uninstall
 	ogr2ogr -f PostgreSQL -skipfailures -overwrite -nlt PROMOTE_TO_MULTI $(POSTGRES_OGR) -lco SCHEMA=naturalearth -nln ne_10m_admin_1_states_provinces /vsizip/src/ne_10m_admin_1_states_provinces.zip/ne_10m_admin_1_states_provinces.shp
 
 uninstall:
+	@echo STATUS=Uninstalling
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS naturalearth.ne_10m_admin_1_states_provinces'
 

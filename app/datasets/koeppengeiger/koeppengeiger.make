@@ -25,7 +25,7 @@ install: uninstall
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS koeppengeiger_classes'
 
 uninstall:
-	@echo "Uninstalling koeppengeiger.koeppengeiger"
+	@echo STATUS=Uninstalling
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS koeppengeiger.koeppengeiger'
 
 

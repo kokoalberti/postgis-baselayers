@@ -29,7 +29,7 @@ install: uninstall
 	psql $(POSTGRES_URI) -a -f geoname_create_indices.sql
 
 uninstall:
-	@echo Uninstalling
+	@echo STATUS=Uninstalling
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS geonames.geoname CASCADE'
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS geonames.alternatename CASCADE'
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS geonames.countryinfo CASCADE'

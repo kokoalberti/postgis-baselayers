@@ -16,7 +16,7 @@ install:
 	@echo STATUS=Complete
 
 uninstall:
-	@echo Uninstalling example.airports
+	@echo STATUS=Uninstalling
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS example.airports CASCADE'
 
 

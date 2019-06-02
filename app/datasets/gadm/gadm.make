@@ -8,6 +8,7 @@ install: uninstall
 	ogr2ogr -f PostgreSQL -overwrite $(POSTGRES_OGR) -lco SCHEMA=gadm tmp/gadm36_levels.gpkg
 
 uninstall:
+	@echo STATUS=Uninstalling
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level0'
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level1'
 	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level2'
