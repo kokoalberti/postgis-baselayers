@@ -1,0 +1,19 @@
+
+# Default settings
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+POSTGRES_HOST=os.getenv('POSTGRES_HOST')
+POSTGRES_PORT=os.getenv('POSTGRES_PORT')
+POSTGRES_DB=os.getenv('POSTGRES_DB')
+POSTGRES_USER=os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD=os.getenv('POSTGRES_PASSWORD')
+
+POSTGRES_URI = os.getenv('POSTGRES_URI', default=f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}')
+POSTGRES_OGR = os.getenv('POSTGRES_OGR', default=f'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"')
+
+PG_BASELAYERS_MAKE_TIMEOUT = os.getenv('PG_BASELAYERS_MAKE_TIMEOUT', default='1800')
+PG_BASELAYERS_SHOW_LOGS = os.getenv('PG_BASELAYERS_SHOW_LOGS', default='YES')

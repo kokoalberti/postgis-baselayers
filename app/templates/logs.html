@@ -15,22 +15,20 @@
     </div>
     {% if logs %}
         <table class="table table-bordered" style="font-size:11pt;" >
-        <tbody style="border-top:0px;">
-        {% for log in logs %}
-            <tr>
-                <td><nobr><tt><a href="{{ url_for('logs', task_id=log.task_id) }}">{{ log.created.strftime("%Y-%m-%d %H:%M:%S") }}</a></tt></nobr></td>
-                <td style="width:100%"><tt>{{ log.info}}</tt></td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            <tbody style="border-top:0px;">
+            {% for log in logs %}
+                <tr>
+                    <td><nobr><tt><a href="{{ url_for('logs', task_id=log.task_id) }}">{{ log.created.strftime("%Y-%m-%d %H:%M:%S") }}</a></tt></nobr></td>
+                    <td style="width:100%"><tt>{{ log.info}}</tt></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if task_id %}
+        <pre style="font-size:8pt;margin-bottom:0px;white-space:pre-wrap;word-wrap: break-word;overflow-wrap: break-word;max-width:100%;">{{ logs[0].log }}</pre>
+        {% endif %}
+    {% endif %}
 
-    {% if task_id %}
-    <pre style="font-size:8pt;margin-bottom:0px;white-space:pre-wrap;word-wrap: break-word;overflow-wrap: break-word;max-width:100%;">{{ logs[0].log }}</pre>
-    {% endif %}
-    {% else %}
-        No logs found.
-    {% endif %}
 {% endblock %}
 
 {% block footjs %}

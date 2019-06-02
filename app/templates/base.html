@@ -13,6 +13,19 @@
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
       <link rel="stylesheet" href="/static/css/style.css">
+      <style>
+        /* include some basic styles here to make error pages look better */
+        code, pre { color:#444; }
+        h1.nav { padding:20px 0px 0px 0px; font-size:1.6em; }
+        a, a:hover { text-decoration:none; }
+div.intro {
+  border-left:1px solid rgb(222, 226, 230);
+  border-right:1px solid rgb(222, 226, 230);
+  padding:15px;
+  padding-top:32px;
+  color:#333
+}
+      </style>
     </head>
     <body>
       {% with messages = get_flashed_messages() %}
@@ -25,26 +38,25 @@
         {% endif %}
       {% endwith %}
         <div class="container">
-            
-
-
           <div class="row  align-items-center">
             <div class="col">
               <h1 class="nav"><tt><a href="/">PostGIS Baselayers</a></tt></h1>
             </div>
           </div>
-
-          
-<div class="text-center"  style="color:#ccc;background-color:#f5f5f5;padding:5px;border:1px solid rgb(222, 226, 230);margin:15px 0px 15px 0px;border-radius:5px;">
+          <div class="text-center"  style="color:#ccc;background-color:#f5f5f5;padding:5px;border:1px solid rgb(222, 226, 230);margin:15px 0px 15px 0px;border-radius:5px;">
               {% if g.conn %}
                 {% set dsn = g.conn.info.dsn_parameters %}
-                <i class="fas fa-database"></i><code> Connected to {{ dsn.user }}@{{dsn.host}}:{{dsn.port}}/{{dsn.dbname}}</code>
+                <i class="fas fa-database"></i><code> Connected to {{ dsn.user }}@{{dsn.host}}:{{dsn.port}}/{{dsn.dbname}}
+
+                  {% if g.postgis_version %}
+                    (PostGIS {{g.postgis_version}})
+                  {% endif %}
+                </code>
+              {% else %}
+                <i class="fas fa-database"></i><code> Could not connect to database!</code>
               {% endif %}
             </div>
-         
-
           {% set active_page = active_page|default('index') -%}
-
           {% if not no_menu %}
           <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -72,10 +84,7 @@
                  You can <a href="javascript:location.reload();">reload this page</a> to update the status.
             </div>
           {% endif %}
-
           {% block content %}{% endblock %}
-
-
 
         </div>
         <div class="container container-fluid text-center" style="padding:15px;">

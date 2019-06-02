@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% set no_menu = True %}
 {% block content %}
-<p>An error occurred while processing this request:</p>
-<pre>{{ error }}</pre>
+<p>An error occurred while processing this request. More information:</p>
+<div style="color:#ccc;background-color:#f5f5f5;padding:7px;padding-top:11px;border:1px solid rgb(222, 226, 230);margin:15px 0px 15px 0px;border-radius:5px;">
+<pre style="margin:0px;">{{ error }}</pre>
+</div>
 {% endblock %}

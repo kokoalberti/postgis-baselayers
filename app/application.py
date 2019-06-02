@@ -37,11 +37,15 @@ load_dotenv()
 # Create the application object and configure it
 app = Flask(__name__)
 
-###
-### Do some set up of the Huey task queue and the database connectivity 
-### require by the application.
-###
+app.config.from_object('settings')
 
+# Create the instance directory
+try:
+    os.makedirs(app.instance_path)
+except OSError:
+    pass
+
+# Create some common exceptions for things that can go wrong
 class DatabaseException(Exception):
     pass
 
@@ -57,50 +61,48 @@ class InstallTerminated(Exception):
 class InstallFailed(Exception):
     pass
 
-if 'POSTGIS_BASELAYERS_WORKDIR' not in os.environ:
-    os.environ['POSTGIS_BASELAYERS_WORKDIR'] = '/opt/postgis-baselayers'
+class ApplicationNotInitialized(Exception):
+    pass
 
-# Create our SqliteHuey instance
-huey_file = os.path.join(os.environ['POSTGIS_BASELAYERS_WORKDIR'], 'huey.db')
+# Create our SqliteHuey instance in Flask's instance_path directory
+huey_file = os.path.join(app.instance_path, 'huey.db')
 def get_huey(reset=False):
     if reset:
         os.remove(huey_file)
     return SqliteHuey(filename=huey_file)
-
 huey = get_huey()
 
 # Function to fetch a database connection
 def get_db():
-    conn = psycopg2.connect(dbname=os.environ.get("POSTGRES_DB",""),
-                    user=os.environ.get("POSTGRES_USER",""), 
-                    password=os.environ.get("POSTGRES_PASSWORD",""),
-                    port=os.environ.get("POSTGRES_PORT", 5432),
-                    host=os.environ.get("POSTGRES_HOST",""))
+    conn = psycopg2.connect(dbname=app.config.get("POSTGRES_DB",""),
+                    user=app.config.get("POSTGRES_USER",""), 
+                    password=app.config.get("POSTGRES_PASSWORD",""),
+                    port=app.config.get("POSTGRES_PORT", 5432),
+                    host=app.config.get("POSTGRES_HOST",""))
     return conn
 
 # Validate the environment to make sure several environment variables are 
 # defined, and it sets up the database connectivity on flask's g.conn.
 @app.before_request
-def validate_environment():
-    #Check that our workdir is set
-    if 'POSTGIS_BASELAYERS_WORKDIR' not in os.environ:
-        raise ConfigError('POSTGIS_BASELAYERS_WORKDIR environment variable not '
-                          'set.')
-
-    #Check that workdir exists
-    if not os.path.isdir(os.environ['POSTGIS_BASELAYERS_WORKDIR']):
-        raise ConfigError('POSTGIS_BASELAYERS_WORKDIR is not a directory.')
-
-    #Check that our huey database exists
-    if not os.path.exists(huey_file):
-        raise ConfigError('Huey SQLite database does not exist.')
-    
+def connect_db():
     # Create the database connection on g.conn
     if not hasattr(g, 'conn'):
-        try:
-            g.conn = get_db()
-        except psycopg2.OperationalError as e:
-            raise DatabaseException("Database connection failed: {}".format(e))
+        g.conn = get_db()
+
+    # Verify PostGIS is installed
+    cur = g.conn.cursor()
+    try:
+        cur.execute("SELECT PostGIS_Lib_Version();")
+        g.postgis_version = cur.fetchone()[0]
+    except psycopg2.errors.UndefinedFunction as e:
+        raise DatabaseException("{}\n\nIt looks like PostGIS is not installed?".format(e))
+
+    # Verify that our own schema exists, otherwise raise ApplicationNotInitialized,
+    # which will show the initialization screen.
+    cur.execute("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'postgis_baselayers');")
+    res = cur.fetchone()[0]
+    if not res:
+        raise ApplicationNotInitialized("PostGIS Baselayers is not initialized yet on this database.")
 
 # When the app context is destroyed, close the database connection.
 @app.teardown_appcontext
@@ -116,66 +118,67 @@ def close_db(error):
 def handle_error(error):
     return render_template("error.html", **locals())
 
-# Update/install the database
-@app.route('/update')
-def update():
+@app.errorhandler(ApplicationNotInitialized)
+def initialization_error(error):
     """
-    Creates or updates the metadata in the postgis_baselayers table. This table
-    is used internally to keep track of which datasets have been installed and
-    what their status is.
+    Show template to initialize the database.
     """
-    cur = g.conn.cursor()
-    cur.execute("""
-        CREATE SCHEMA IF NOT EXISTS postgis_baselayers;
-        CREATE TABLE IF NOT EXISTS postgis_baselayers.dataset (
-          name varchar(256) PRIMARY KEY,    -- eg. 'example'
-          metadata json NOT NULL            -- flexible column for later use
-        );
-        CREATE TABLE IF NOT EXISTS postgis_baselayers.layer (
-          key varchar(512) PRIMARY KEY,     -- eg. 'example.airports'
-          name varchar(256) NOT NULL,       -- eg. 'airports'
-          dataset_name varchar(256) REFERENCES postgis_baselayers.dataset(name),
-          status int DEFAULT 0 NOT NULL,    -- 0: not installed; 1: installed; 2: queued; 3: working 4: error
-          info varchar(512) DEFAULT '',     -- additional status info 
-          metadata json NOT NULL            -- flexible column for later use
-        );
-        CREATE TABLE IF NOT EXISTS postgis_baselayers.log (
-          id SERIAL PRIMARY KEY,
-          created TIMESTAMP DEFAULT NOW(), 
-          layer_key varchar(128) REFERENCES postgis_baselayers.layer(key),
-          task_id varchar(128) NOT NULL, 
-          target varchar(128) NOT NULL,     -- eg: 'install' or 'uninstall'
-          info varchar(512),                -- additional status info
-          log TEXT
-        );
-    """)
-    g.conn.commit()
+    if request.method == 'GET':
+        return render_template('initialize.html')
 
-    # Parse and update all the datasets.
-    metadata_path = os.path.join(app.root_path, "datasets", "*", "metadata.json")
-    for metadata_file in glob(metadata_path):
-        with open(metadata_file) as f:
-            dataset = json.load(f)
-            cur.execute("""
-                INSERT INTO postgis_baselayers.dataset (name, metadata) 
-                VALUES (%s, %s) 
-                ON CONFLICT ON CONSTRAINT dataset_pkey 
-                DO UPDATE SET metadata = %s;
-            """, (dataset['name'], json.dumps(dataset['metadata']), json.dumps(dataset['metadata'])))
+    if request.method == 'POST' and request.form.get("initialize") == 'yes':
+        cur = g.conn.cursor()
+        #TODO: put this in a separate 'create_schema.sql' file and run that
+        cur.execute("""
+            CREATE SCHEMA IF NOT EXISTS postgis_baselayers;
+            CREATE TABLE IF NOT EXISTS postgis_baselayers.dataset (
+              name varchar(256) PRIMARY KEY,    -- eg. 'example'
+              metadata json NOT NULL            -- flexible column for later use
+            );
+            CREATE TABLE IF NOT EXISTS postgis_baselayers.layer (
+              key varchar(512) PRIMARY KEY,     -- eg. 'example.airports'
+              name varchar(256) NOT NULL,       -- eg. 'airports'
+              dataset_name varchar(256) REFERENCES postgis_baselayers.dataset(name),
+              status int DEFAULT 0 NOT NULL,    -- 0: not installed; 1: installed; 2: queued; 3: working 4: error
+              info varchar(512) DEFAULT '',     -- additional status info 
+              metadata json NOT NULL            -- flexible column for later use
+            );
+            CREATE TABLE IF NOT EXISTS postgis_baselayers.log (
+              id SERIAL PRIMARY KEY,
+              created TIMESTAMP DEFAULT NOW(), 
+              layer_key varchar(128) REFERENCES postgis_baselayers.layer(key),
+              task_id varchar(128) NOT NULL, 
+              target varchar(128) NOT NULL,     -- eg: 'install' or 'uninstall'
+              info varchar(512),                -- additional status info
+              log TEXT
+            );
+        """)
+        g.conn.commit()
 
-            for layer in dataset['layers']:
-                key = "{}.{}".format(dataset['name'], layer['name'])
+        # Parse and update all the datasets.
+        metadata_path = os.path.join(app.root_path, "datasets", "*", "metadata.json")
+        for metadata_file in glob(metadata_path):
+            with open(metadata_file) as f:
+                dataset = json.load(f)
                 cur.execute("""
-                    INSERT INTO postgis_baselayers.layer (key, name, dataset_name, metadata)
-                    VALUES (%s, %s, %s, %s)
-                    ON CONFLICT ON CONSTRAINT layer_pkey 
+                    INSERT INTO postgis_baselayers.dataset (name, metadata) 
+                    VALUES (%s, %s) 
+                    ON CONFLICT ON CONSTRAINT dataset_pkey 
                     DO UPDATE SET metadata = %s;
-                """, (key, layer['name'], dataset['name'], json.dumps(layer['metadata']), json.dumps(layer['metadata'])))
-            g.conn.commit()
-        #message = "Update failed"
-        #return render_template('update.html', **locals())
-    message = "Update/initialization completed."
-    return render_template('update.html', **locals())
+                """, (dataset['name'], json.dumps(dataset['metadata']), json.dumps(dataset['metadata'])))
+
+                for layer in dataset['layers']:
+                    key = "{}.{}".format(dataset['name'], layer['name'])
+                    cur.execute("""
+                        INSERT INTO postgis_baselayers.layer (key, name, dataset_name, metadata)
+                        VALUES (%s, %s, %s, %s)
+                        ON CONFLICT ON CONSTRAINT layer_pkey 
+                        DO UPDATE SET metadata = %s;
+                    """, (key, layer['name'], dataset['name'], json.dumps(layer['metadata']), json.dumps(layer['metadata'])))
+                g.conn.commit()
+        return redirect(url_for('index'))
+    else:
+        abort(404)
 
 @app.route('/reset')
 def reset():
@@ -184,19 +187,6 @@ def reset():
 
 @app.route('/')
 def index():
-    cur = g.conn.cursor()
-
-    # Check if the 'postgis_baselayers' schema exists. This is where we store 
-    # status information for the application. If it doesn't exist (for example
-    # when the app is accessed for the first time) then redirect to the 
-    # 'update' view, where this schema and tables will be updates/initialized
-    # automatically for the first time. The update view then redirects back
-    # to the index page.
-    cur.execute("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'postgis_baselayers');")
-    res = cur.fetchone()
-    if not res[0]:
-        return redirect(url_for('update'))
-
     # Fetch the metadata
     cur = g.conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("""
@@ -301,7 +291,11 @@ def settings():
             layer.key
     """)
     layers = cur.fetchall()
+
+    cur.execute("SELECT PostGIS_Full_Version() AS postgis_version, version() as postgresql_version;")
+    version_info = cur.fetchone()
     return render_template("settings.html", **locals())
+
 
 @app.route("/dataset/<dataset_name>/")
 def dataset(dataset_name):
@@ -338,6 +332,7 @@ def dataset(dataset_name):
         dataset = json.load(f)
 
     return render_template("dataset.html", **locals())
+
 
 @huey.task(context=True)
 def run_task(key, target, task=None, timeout=1800):
@@ -381,17 +376,25 @@ def run_task(key, target, task=None, timeout=1800):
                     shutil.copy2(file_path, temp_dir.name)
                     logger.info("Copied {} to {}".format(file_path, os.path.join(temp_dir.name, f)))
 
-            # Set some additional environment variables for our installation
-            # subprocesses.
-            subprocess_env = copy.deepcopy(os.environ)
-            #subprocess_env['PGOPTIONS'] = "-c search_path={},public".format(key)
-            subprocess_env['POSTGRES_URI'] = "postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
-            subprocess_env['POSTGRES_OGR'] = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"'.format(**os.environ)
-
             # Run make
             makefile = os.path.join(temp_dir.name, f"{layer}.make")
             cmd = ["/usr/bin/make", "-f", makefile, target]
             logger.info(f"Running subprocess '{cmd}'")
+
+            # Craft some environment variables to help the subprocess. These 
+            # should be defined already when using a Docker environment, but 
+            # lets not assume that and just inherit them from the application
+            # config, which will in turn get them from the environment if they
+            # are defined there.
+            subprocess_env = {
+                'POSTGRES_HOST': app.config.get('POSTGRES_HOST'),
+                'POSTGRES_PORT': app.config.get('POSTGRES_PORT'),
+                'POSTGRES_DB': app.config.get('POSTGRES_DB'),
+                'POSTGRES_USER': app.config.get('POSTGRES_USER'),
+                'POSTGRES_PASSWORD': app.config.get('POSTGRES_PASSWORD'),
+                'POSTGRES_URI': app.config.get('POSTGRES_URI'),
+                'POSTGRES_OGR': app.config.get('POSTGRES_OGR')
+            }
 
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, 
                                             stderr=subprocess.PIPE, 
@@ -480,14 +483,11 @@ def run_task(key, target, task=None, timeout=1800):
             log_content = logstream.getvalue()
 
             # Remove passwords from logfile
-            postgres_uri_secret = "postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
             postgres_uri_safe = "postgresql://{POSTGRES_USER}:XXXXXX@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
-            log_content = log_content.replace(postgres_uri_secret, postgres_uri_safe)
+            log_content = log_content.replace(os.environ.get("POSTGRES_URI"), postgres_uri_safe)
 
-            postgres_ogr_secret = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password={POSTGRES_PASSWORD}"'.format(**os.environ)
             postgres_ogr_safe = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password=XXXXXX"'.format(**os.environ)
-            log_content = log_content.replace(postgres_ogr_secret, postgres_ogr_safe)
-
+            log_content = log_content.replace(os.environ.get("POSTGRES_OGR"), postgres_ogr_safe)
 
             cur.execute("""
                 INSERT INTO 

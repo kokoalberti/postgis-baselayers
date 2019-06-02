@@ -17,6 +17,20 @@
         <input class="btn btn-primary" type="submit" value="Uninstall Selected Datasets">
         </p>
     </form>
+    <hr>
+    <h2>Database Information</h2>
+
+    {% set dsn = g.conn.info.dsn_parameters %}
+    <p><tt>
+        Connected to {{ dsn.user }}@{{dsn.host}}:{{dsn.port}}/{{dsn.dbname}}.
+    </tt></p>
+    <p><tt>
+        PostgreSQL version: {{version_info['postgresql_version']}}
+    </tt></p>
+    <p><tt>
+        PostGIS version: {{version_info['postgis_version']}}
+    </tt></p>
+
 </div>
 
 {% endblock %}

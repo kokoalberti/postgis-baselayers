@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% set active_page = "settings" %}
+{% block content %}
+<div class="intro text-center" style="border-bottom:1px solid rgb(222, 226, 230);">
+    {% if not message %}
+    <form action="" method="POST">
+    <p>It looks like PostGIS Baselayers is not initialized in this database yet. A new schema called <code>postgis_baselayers</code> will be created where information about installed datasets is stored. After initializing the application you'll be able to load new datasets.</p>
+    <input type="hidden" name="initialize" value="yes" />
+    <input class="btn btn-primary" type="submit" value="Initialize PostGIS Baselayers">
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block footjs %}
+{% endblock %}
