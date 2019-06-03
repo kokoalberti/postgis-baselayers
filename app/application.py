@@ -127,7 +127,8 @@ def handle_error(error):
     return render_template("error.html", **locals())
 
 @app.errorhandler(ApplicationNotInitialized)
-def initialization_error(error):
+@app.route('/initialize', methods=['GET','POST'])
+def initialization_error(error=""):
     """
     Show template to initialize the database.
     """
