@@ -1,1 +1,23 @@
-# TODO
+#
+# This is the docker-compose file for a standalone version of the 
+# PostGIS Baselayers application, which works on an existing 
+# database, rather than starting its own PostGIS instance as part
+# of the docker environment.
+#
+# The container is started with 'network_mode: host' so that if 
+# PostGIS is running on localhost it will be easily accessible.
+#
+# Be sure to configure the correct credentials in the .env file!
+#
+version: '3'
+services:
+  postgis-baselayers:
+    network_mode: host
+    build: app/
+    container_name: postgis-baselayers
+    env_file: .env
+    environment:
+      - GUNICORN_CMD_ARGS=--bind=0.0.0.0:8003 --workers=1
+      - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
+      - POSTGRES_OGR=PG:"dbname=${POSTGRES_DB} host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD}"
+    command: /usr/bin/supervisord -c "/etc/supervisor/conf.d/supervisord.conf"
