@@ -24,6 +24,9 @@ from flask import Flask, render_template, redirect, url_for, g, request, \
                   jsonify, Markup
 from flask.json import dumps
 
+# Version
+__version__ = '0.1.0'
+
 # Set up logging to mirror any messages to stdout
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -109,6 +112,11 @@ def connect_db():
 def close_db(error):
     if hasattr(g, 'conn'):
         g.conn.close()
+
+# Context processor to inject some common data into templates
+@app.context_processor
+def template_variables():
+    return dict(pg_baselayers_version=__version__)
 
 # Handle any errors using an error page
 @app.errorhandler(DatabaseException)

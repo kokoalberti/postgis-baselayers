@@ -18,8 +18,10 @@
         </p>
     </form>
     <hr>
-    <h2>Database Information</h2>
-
+    <h2>Version Information</h2>
+    <p><tt>
+        PostGIS Baselayers v{{pg_baselayers_version}}.
+    </tt></p>
     {% set dsn = g.conn.info.dsn_parameters %}
     <p><tt>
         Connected to {{ dsn.user }}@{{dsn.host}}:{{dsn.port}}/{{dsn.dbname}}.
