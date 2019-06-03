@@ -4,7 +4,7 @@ The `koeppengeiger` dataset contains global data of historic and present climate
 
 ## Description
 
-The data is stored in the `koeppengeiger` schema, in a table called `koeppengeiger`. The `wkb_geometry` column contains the geometry, the `scenario` column contains the scenario, and the `classification` contains the climate classification code.
+The data is stored in the `koeppengeiger` schema, in a table called `koeppengeiger`. The `geom` column contains the geometry, the `scenario` column contains the scenario, and the `classification` contains the climate classification code.
 
 ## Examples
 
@@ -18,7 +18,7 @@ Use the following query to obtain the climate classification under different sce
          koeppengeiger.koeppengeiger 
     WHERE 
          ST_Intersects(
-            koeppengeiger.wkb_geometry, 
+            koeppengeiger.geom, 
             ST_SetSRID(ST_Point(-71.1043443253471, 42.3150676015829), 4326)
          );
 

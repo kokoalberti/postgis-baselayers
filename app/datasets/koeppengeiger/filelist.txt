@@ -1,5 +1,0 @@
-http://koeppen-geiger.vu-wien.ac.at/data/1901-1925_GIS.zip
-http://koeppen-geiger.vu-wien.ac.at/data/1926-1950_GIS.zip
-http://koeppen-geiger.vu-wien.ac.at/data/1951-1975_GIS.zip
-http://koeppen-geiger.vu-wien.ac.at/data/1976-2000_GIS.zip
-http://koeppen-geiger.vu-wien.ac.at/data/legend.txt

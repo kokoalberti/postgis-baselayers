@@ -6,7 +6,7 @@ The Geonames geographical database covers all countries and contains over eleven
 
 The Geonames database is available under the `geonames` schema, and consists of the `alternatename`, `countryinfo`, and `geoname` tables. 
 
-The `geoname` table contains the main collection of features. Each feature has a geometry column called `the_geom`, and a feature class and code in the `fclass` and `fcode` column to specify what type of feature it is. A detailed list of all the available [geonames feature classes](http://www.geonames.org/export/codes.html) is on the Geonames website. The feature class is a useful attribute to filter and restrict your results to the type of things that you're interested in.
+The `geoname` table contains the main collection of features. Each feature has a geometry column called `geom`, and a feature class and code in the `fclass` and `fcode` column to specify what type of feature it is. A detailed list of all the available [geonames feature classes](http://www.geonames.org/export/codes.html) is on the Geonames website. The feature class is a useful attribute to filter and restrict your results to the type of things that you're interested in.
 
 For more information on the contents of the tables see the [readme](http://download.geonames.org/export/dump/readme.txt).
 
@@ -34,7 +34,7 @@ Query:
         ) 
         AND
             ST_Intersects(
-                the_geom, 
+                geom, 
                 ST_SetSRID(ST_GeomFromText('POLYGON((-8.10 38.86,-4.47 39.29,-5.96 36.87,-8.10 38.86))'), 4326)
             ) 
     ORDER BY 

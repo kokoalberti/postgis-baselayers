@@ -8,31 +8,31 @@ Because the Natural Earth dataset is quite extensive, only a selection of the la
 
 ### ne_10m_admin_0_countries
 
-Simple layer of countries at the Admin 0 level. Column `wkb_geometry` contains the geometry, and `name` the common name of the country. Also includes various other data fields such as population, abbreviations, GDP estimates, and names in various other languages. 
+Simple layer of countries at the Admin 0 level. Column `geom` contains the geometry, and `name` the common name of the country. Also includes various other data fields such as population, abbreviations, GDP estimates, and names in various other languages. 
 
 More information: [https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/](https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/)
 
 ### ne_10m_admin_1_states_provinces
 
-Contains level 1 adminitrative subdivisions such as states and provinces. Column `wkb_geometry` contains the geometry and `name` contains the name of the division. Various other fields are also available.
+Contains level 1 adminitrative subdivisions such as states and provinces. Column `geom` contains the geometry and `name` contains the name of the division. Various other fields are also available.
 
 More information: [https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-1-states-provinces/](https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-1-states-provinces/)
 
 ### ne_10m_populated_places
 
-Contains point locations of populated places. Column `wkb_geometry` contains the geometry, and `name` contains the name of the place. Various other fields also included.
+Contains point locations of populated places. Column `geom` contains the geometry, and `name` contains the name of the place. Various other fields also included.
 
 More information: [https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/](https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-populated-places/)
 
 ### ne_10m_lakes
 
-Contains global lakes and reservoirs, including the Europe and North America supplements. Column `wkb_geometry` contains the geometry, `featurecla` is a feature class to differentiate between lakes and reservoirs, and `name` contains the name of the feature.
+Contains global lakes and reservoirs, including the Europe and North America supplements. Column `geom` contains the geometry, `featurecla` is a feature class to differentiate between lakes and reservoirs, and `name` contains the name of the feature.
 
 More information: [https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-lakes/](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-lakes/)
 
 ### ne_10m_rivers
 
-Contains global rivers and lakes centerlines, including the Europe and North America supplements. Column `wkb_geometry` contains the geometry, and `name` contains the common name of the feature.
+Contains global rivers and lakes centerlines, including the Europe and North America supplements. Column `geom` contains the geometry, and `name` contains the common name of the feature.
 
 More information: [https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-rivers-lake-centerlines/](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-rivers-lake-centerlines/)
 
@@ -51,8 +51,8 @@ Query:
         ne_10m_admin_0_countries.name = 'Poland' AND 
 		ne_10m_rivers.name != '' AND
         ST_Intersects(
-            ne_10m_admin_0_countries.wkb_geometry,
-            ne_10m_rivers.wkb_geometry
+            ne_10m_admin_0_countries.geom,
+            ne_10m_rivers.geom
         ) 
     ORDER BY 
         name
@@ -79,7 +79,7 @@ Query:
 
     SELECT 
         ne_10m_lakes.name,
-        ST_Area(ne_10m_lakes.wkb_geometry::geography)/(1000*1000) AS area_sq_km
+        ST_Area(ne_10m_lakes.geom::geography)/(1000*1000) AS area_sq_km
     FROM 
         naturalearth.ne_10m_admin_1_states_provinces, 
         naturalearth.ne_10m_lakes 
@@ -87,8 +87,8 @@ Query:
         ne_10m_admin_1_states_provinces.name = 'California' AND 
         ne_10m_lakes.featurecla = 'Reservoir' AND
         ST_Intersects(
-            ne_10m_admin_1_states_provinces.wkb_geometry,
-            ne_10m_lakes.wkb_geometry
+            ne_10m_admin_1_states_provinces.geom,
+            ne_10m_lakes.geom
         ) 
     ORDER BY 
         area_sq_km DESC
@@ -119,10 +119,10 @@ Query:
 		ne_10m_populated_places.adm0cap = 1 AND 
 		ne_10m_rivers.name_en != '' AND
 		ST_Within(
-			ne_10m_populated_places.wkb_geometry,
-			(SELECT ST_Union(wkb_geometry) FROM naturalearth.ne_10m_admin_0_countries WHERE continent='Europe')
+			ne_10m_populated_places.geom,
+			(SELECT ST_Union(geom) FROM naturalearth.ne_10m_admin_0_countries WHERE continent='Europe')
 		) AND
-		ST_Intersects(ST_Buffer(ne_10m_populated_places.wkb_geometry, 0.05), ne_10m_rivers.wkb_geometry)
+		ST_Intersects(ST_Buffer(ne_10m_populated_places.geom, 0.05), ne_10m_rivers.geom)
 	ORDER BY 
 	 	ne_10m_populated_places.pop_max DESC
 	LIMIT 10;
