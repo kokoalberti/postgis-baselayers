@@ -52,6 +52,9 @@ except OSError:
 class DatabaseException(Exception):
     pass
 
+class PostgisMissingException(Exception):
+    pass
+
 class ConfigError(Exception):
     pass
 
@@ -92,20 +95,23 @@ def connect_db():
     if not hasattr(g, 'conn'):
         g.conn = get_db()
 
-    # Verify PostGIS is installed
-    cur = g.conn.cursor()
-    try:
-        cur.execute("SELECT PostGIS_Lib_Version();")
-        g.postgis_version = cur.fetchone()[0]
-    except psycopg2.errors.UndefinedFunction as e:
-        raise DatabaseException("{}\n\nIt looks like PostGIS is not installed?".format(e))
+    # Don't do these checks when our endpoint is 'try_install_postgis'...
+    if request.endpoint != 'try_install_postgis':
 
-    # Verify that our own schema exists, otherwise raise ApplicationNotInitialized,
-    # which will show the initialization screen.
-    cur.execute("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'postgis_baselayers');")
-    res = cur.fetchone()[0]
-    if not res:
-        raise ApplicationNotInitialized("PostGIS Baselayers is not initialized yet on this database.")
+        # Verify PostGIS is installed
+        cur = g.conn.cursor()
+        try:
+            cur.execute("SELECT PostGIS_Lib_Version();")
+            g.postgis_version = cur.fetchone()[0]
+        except psycopg2.errors.UndefinedFunction as e:
+            raise PostgisMissingException("{}\n------------\nIt looks like PostGIS is not installed in this database?\n\nYou can install it manually by running this SQL command on the database: \n\nCREATE EXTENSION postgis;\n\nOr postgis-baselayers can try to do it automatically if you click the button below...\n".format(e))
+
+        # Verify that our own schema exists, otherwise raise ApplicationNotInitialized,
+        # which will show the initialization screen.
+        cur.execute("SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'postgis_baselayers');")
+        res = cur.fetchone()[0]
+        if not res:
+            raise ApplicationNotInitialized("PostGIS Baselayers is not initialized yet on this database.")
 
 # When the app context is destroyed, close the database connection.
 @app.teardown_appcontext
@@ -120,10 +126,13 @@ def template_variables():
 
 # Handle any errors using an error page
 @app.errorhandler(DatabaseException)
+@app.errorhandler(PostgisMissingException)
 @app.errorhandler(ConfigError)
 @app.errorhandler(ApplicationError)
 @app.errorhandler(psycopg2.OperationalError)
 def handle_error(error):
+    print(type(error))
+    error_type = type(error).__name__
     return render_template("error.html", **locals())
 
 @app.errorhandler(ApplicationNotInitialized)
@@ -225,6 +234,16 @@ def index():
     cur.execute("SELECT key FROM postgis_baselayers.layer WHERE status=2")
     layers_waiting = [_[0] for _ in cur.fetchall()]
     return render_template("index.html", **locals())
+
+@app.route("/try-postgis-install", methods=["POST"])
+def try_install_postgis():
+    """
+    Tries to create the postgis extention.
+    """
+    cur = g.conn.cursor()
+    cur.execute("CREATE EXTENSION postgis;")
+    g.conn.commit()
+    return redirect(url_for('index'))
 
 @app.route("/install", methods=['POST'])
 def install():

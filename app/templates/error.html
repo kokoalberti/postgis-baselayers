@@ -5,4 +5,12 @@
 <div style="color:#ccc;background-color:#f5f5f5;padding:7px;padding-top:11px;border:1px solid rgb(222, 226, 230);margin:15px 0px 15px 0px;border-radius:5px;">
 <pre style="margin:0px;">{{ error }}</pre>
 </div>
+
+{% if error_type == 'PostgisMissingException' %}
+<div style="text-align:center;">
+<form action="{{url_for('try_install_postgis')}}" method="post" style="margin-top:20px;"/>
+    <input type="submit" class="btn btn-outline-primary" value="Try to install PostGIS for me!" />
+</form>
+</div>
+{% endif %}
 {% endblock %}
