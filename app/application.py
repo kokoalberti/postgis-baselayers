@@ -9,6 +9,7 @@ import subprocess
 import copy
 import markdown
 import tempfile
+import functools 
 
 from threading import Timer
 from glob import glob
@@ -87,8 +88,25 @@ def get_db():
                     host=app.config.get("POSTGRES_HOST",""))
     return conn
 
+
+def check_username_and_password(username, password):
+    return username == app.config['PG_BASELAYERS_USERNAME'] and password == app.config['PG_BASELAYERS_PASSWORD']
+
 # Validate the environment to make sure several environment variables are 
 # defined, and it sets up the database connectivity on flask's g.conn.
+@app.before_request
+def basic_authentication():
+    if app.config['PG_BASELAYERS_USERNAME'] == '' and app.config['PG_BASELAYERS_PASSWORD'] == '':
+        return None
+
+    auth = request.authorization
+    if not auth or not check_username_and_password(auth.username, auth.password):
+        print("RETURIING AUTHHHENTI") 
+        resp = jsonify({'message': "Please authenticate."})
+        resp.status_code = 401
+        resp.headers['WWW-Authenticate'] = 'Basic realm="PostGIS-Baselayers"'
+        return resp
+
 @app.before_request
 def connect_db():
     # Create the database connection on g.conn
