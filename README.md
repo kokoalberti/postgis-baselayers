@@ -1,22 +1,20 @@
-# PostGIS Baselayers
+# PostGIS Baselayers 0.1.0
 
-**This is a work in progress!**
-
-**I'm currently improving the application and adding some much needed features and stability. Please check back in a few weeks for more news and updates.**
-
-PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.
-
-The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
+**PostGIS Baselayers is a web application that connects to a PostGIS database and lets you automatically download and import a selection of popular open vector datasets (Natural Earth, GADM, Geonames, etc) into the database. It comes bundled with a Docker environment and a PostGIS database container to get up and running quickly.**
 
 <p align="center">
   <img src="docs/img/screenshot-home.png">
 </p>
 
+The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
+
 ## Why
 
 For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS or QGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize them and let you get up and running quickly with a large collection of open vector datasets.
 
-Installation of new datasets is a breeze with the installers, and having all the datasets in a single database lets you do all sort of fun queries across different datasets.
+Installation of new datasets is a breeze with the installers and saves a lot of time compared to figuring out yourself how to download import these datasets into your database. Just click install, and get started with some analysis or visualization task 
+
+Also, having all the datasets in a single database lets you do all sort of fun queries across different datasets, for example making a list of reservoirs in the state of California, or finding out the climate classification of the 20 largest cities in the world.
 
 ## Quick Start
 
@@ -64,7 +62,7 @@ And you can access the application as usual at `http://localhost:8003/`. See [`d
 
 ### Other Options
 
-It is also possible to run the application directly on another machine without the use of Docker, but that is not documented at this time. See the application's [`Dockerfile`](app/Dockerfile) for some hints on getting up and running on Ubuntu.
+It is also possible to run the application directly as a Flask/WSGI app on another machine without the use of Docker, but that is not documented at this time. See the application's [`Dockerfile`](app/Dockerfile) for some hints on getting up and running on Ubuntu.
 
 Another option is to use the dataset Makefiles directly without the web application. You'll have to set the same environment variables as defined in `.env` as well as the composited convenience variables `POSTGRES_URI` and `POSTGRES_OGR`. Then run a command like `make -f <layer>.make install` to install the relevant layer into the database. See the [`datasets`](app/datasets/) directory containing Makefiles for all datasets for more information.
 
@@ -91,6 +89,7 @@ Vector datasets currently available in PostGIS Baselayers are a selection of:
 * [GADM](app/datasets/gadm/)
 * [Koeppen-Geiger Climate Classifications](app/datasets/koeppengeiger/)
 * [Natural Earth](app/datasets/naturalearth/)
+* [GRanD Global Reservoirs and Dams](app/datasets/grand/)
 
 And an example dataset that can help you get started if you're interested in adding other datasets:
 
@@ -104,4 +103,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ## Issues
 
-See the issue tracker for a list of issues and features.
+See the issue tracker for a list of issues and feature/data requests.
