@@ -8,6 +8,8 @@ PostGIS Baselayers is a web application that connects to a PostGIS database and 
 
 The application and database works nicely as a standalone spatial database that you can run queries against, or you can load data from it directly using QGIS/GDAL tools.
 
+See blog post for more info: [Introducing PostGIS Baselayers: Automatically import Natural Earth, Geonames, GADM, and other popular vector datasets into a PostGIS database](https://kokoalberti.com/articles/postgis-baselayers-importing-popular-vector-datasets-into-postgis/).
+
 ## Why
 
 For a few years now I have had an assortment of different base layers lying around to help with making maps and visualizations, experimenting with PostGIS or QGIS, and for various other spatial analysis tasks. Having these datasets just sitting around in all sorts of different formats was a hassle, and I decided to put some time into a framework that would organize them and let you get up and running quickly with a large collection of open vector datasets.
