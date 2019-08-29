@@ -70,6 +70,8 @@ Another option is to use the dataset Makefiles directly without the web applicat
 
 Accessing databases using SSL (for example on AWS RDS) is supported through the `POSTGRES_SSLMODE=verify-full` and `POSTGRES_SSLROOTCERT=/root/.postgresql/root.crt` parameters. The `/root/.postgresql/root.crt` for Amazon RDS has been `ADD`ed into the application container on build. To use another one change the path or overwrite it.
 
+The [`docker-compose-dev.yaml`](docker-compose-dev.yaml) file can be used to start a development environment to experiment with the code. It doesnt use supervisord and starts two app containers, one for the work queue and one for the app with Flask's development server.
+
 ## Accessing Data
 
 Once a dataset is installed, you can access the PostGIS database using your favorite access method. When using the PostGIS container bundled with the application, the default credentials are as follows:
