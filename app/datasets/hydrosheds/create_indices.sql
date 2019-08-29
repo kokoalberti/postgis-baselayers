@@ -1,0 +1,13 @@
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_hybas_id ON hydrosheds.hydrobasins_lev00 (hybas_id);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_1 ON hydrosheds.hydrobasins_lev00 (pfaf_1);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_2 ON hydrosheds.hydrobasins_lev00 (pfaf_2);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_3 ON hydrosheds.hydrobasins_lev00 (pfaf_3);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_4 ON hydrosheds.hydrobasins_lev00 (pfaf_4);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_5 ON hydrosheds.hydrobasins_lev00 (pfaf_5);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_6 ON hydrosheds.hydrobasins_lev00 (pfaf_6);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_7 ON hydrosheds.hydrobasins_lev00 (pfaf_7);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_8 ON hydrosheds.hydrobasins_lev00 (pfaf_8);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_9 ON hydrosheds.hydrobasins_lev00 (pfaf_9);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_10 ON hydrosheds.hydrobasins_lev00 (pfaf_10);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_11 ON hydrosheds.hydrobasins_lev00 (pfaf_11);
+CREATE INDEX IF NOT EXISTS idx_hydrobasins_lev00_pfaf_12 ON hydrosheds.hydrobasins_lev00 (pfaf_12);

@@ -1,0 +1,22 @@
+{
+    "name": "hydrosheds",
+    "metadata": {
+        "description": "Data from HydroSHEDS and related projects",
+        "attribution": ["Hydrological data from hydrosheds.org"],
+        "url": "http://hydrosheds.org"
+    },
+    "layers": [
+        { 
+            "name": "hydrobasins_lev00", 
+            "metadata": {
+                "description": "Global hydrological basins (HydroBASINS) dataset at Level 0"
+            }
+        },
+        { 
+            "name": "gloric", 
+            "metadata": {
+                "description": "Global river classification (GloRiC) dataset"
+            }
+        }
+    ]
+}
