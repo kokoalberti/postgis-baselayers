@@ -538,11 +538,11 @@ def run_task(key, target, task=None):
             log_content = logstream.getvalue()
 
             # Remove passwords from logfile
-            postgres_uri_safe = "postgresql://{POSTGRES_USER}:XXXXXX@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**os.environ)
-            log_content = log_content.replace(os.environ.get("POSTGRES_URI"), postgres_uri_safe)
+            postgres_uri_safe = "postgresql://{POSTGRES_USER}:XXXXXX@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}".format(**app.config)
+            log_content = log_content.replace(app.config.get("POSTGRES_URI"), postgres_uri_safe)
 
-            postgres_ogr_safe = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password=XXXXXX"'.format(**os.environ)
-            log_content = log_content.replace(os.environ.get("POSTGRES_OGR"), postgres_ogr_safe)
+            postgres_ogr_safe = 'PG:"dbname={POSTGRES_DB} host={POSTGRES_HOST} port={POSTGRES_PORT} user={POSTGRES_USER} password=XXXXXX"'.format(**app.config)
+            log_content = log_content.replace(app.config.get("POSTGRES_OGR"), postgres_ogr_safe)
 
             cur.execute("""
                 INSERT INTO 
