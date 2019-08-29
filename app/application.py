@@ -26,7 +26,7 @@ from flask import Flask, render_template, redirect, url_for, g, request, \
 from flask.json import dumps
 
 # Version
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 # Set up logging to mirror any messages to stdout
 logger = logging.getLogger()
@@ -461,6 +461,7 @@ def run_task(key, target, task=None):
             #      start two timers, one for kill after timeout seconds, and 
             #      one using a more rigorous approach if that's possible.
             def process_terminator():
+                #TODO: Update the status to 'Terminating...' or something.
                 logger.error("Timer expired, killing process... (This may also take a while to complete)")
                 process.kill()
 
