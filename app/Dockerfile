@@ -54,7 +54,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Copy certificates so we can connect to RDS instances on AWS
 # using sslmode=verify-full
-COPY https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /root/.postgresql/root.crt
+ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /root/.postgresql/root.crt
 
 # Expose port 8080 on the container
 EXPOSE 8080
