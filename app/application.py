@@ -85,7 +85,9 @@ def get_db():
                     user=app.config.get("POSTGRES_USER",""), 
                     password=app.config.get("POSTGRES_PASSWORD",""),
                     port=app.config.get("POSTGRES_PORT", 5432),
-                    host=app.config.get("POSTGRES_HOST",""))
+                    host=app.config.get("POSTGRES_HOST",""),
+                    sslmode=app.config.get("POSTGRES_SSLMODE",""),
+                    sslrootcert=app.config.get("POSTGRES_SSLROOTCERT",""))
     return conn
 
 
@@ -148,6 +150,7 @@ def template_variables():
 @app.errorhandler(ConfigError)
 @app.errorhandler(ApplicationError)
 @app.errorhandler(psycopg2.OperationalError)
+@app.errorhandler(psycopg2.ProgrammingError)
 def handle_error(error):
     print(type(error))
     error_type = type(error).__name__
@@ -438,6 +441,8 @@ def run_task(key, target, task=None, timeout=1800):
                 'POSTGRES_DB': app.config.get('POSTGRES_DB'),
                 'POSTGRES_USER': app.config.get('POSTGRES_USER'),
                 'POSTGRES_PASSWORD': app.config.get('POSTGRES_PASSWORD'),
+                'POSTGRES_SSLMODE': app.config.get('POSTGRES_SSLMODE'),
+                'POSTGRES_SSLROOTCERT': app.config.get('POSTGRES_SSLROOTCERT'),
                 'POSTGRES_URI': app.config.get('POSTGRES_URI'),
                 'POSTGRES_OGR': app.config.get('POSTGRES_OGR')
             }

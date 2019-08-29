@@ -3,3 +3,4 @@ app/datasets/*/src
 app/datasets/*/tmp
 huey.db
 notes.txt
+.env.local

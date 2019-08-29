@@ -68,6 +68,8 @@ It is also possible to run the application directly as a Flask/WSGI app on anoth
 
 Another option is to use the dataset Makefiles directly without the web application. You'll have to set the same environment variables as defined in `.env` as well as the composited convenience variables `POSTGRES_URI` and `POSTGRES_OGR`. Then run a command like `make -f <layer>.make install` to install the relevant layer into the database. See the [`datasets`](app/datasets/) directory containing Makefiles for all datasets for more information.
 
+Accessing databases using SSL (for example on AWS RDS) is supported through the `POSTGRES_SSLMODE=verify-full` and `POSTGRES_SSLROOTCERT=/root/.postgresql/root.crt` parameters. The `/root/.postgresql/root.crt` for Amazon RDS has been `ADD`ed into the application container on build. To use another one change the path or overwrite it.
+
 ## Accessing Data
 
 Once a dataset is installed, you can access the PostGIS database using your favorite access method. When using the PostGIS container bundled with the application, the default credentials are as follows:

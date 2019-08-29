@@ -15,9 +15,10 @@ services:
     network_mode: host
     build: app/
     container_name: postgis-baselayers
-    env_file: .env
+    env_file: 
+      - .env
     environment:
       - GUNICORN_CMD_ARGS=--bind=0.0.0.0:8003 --workers=1
-      - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
-      - POSTGRES_OGR=PG:"dbname=${POSTGRES_DB} host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD}"
+      - POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=${POSTGRES_SSLMODE}&sslrootcert=${POSTGRES_SSLROOTCERT}
+      - POSTGRES_OGR=PG:"dbname=${POSTGRES_DB} host=${POSTGRES_HOST} port=${POSTGRES_PORT} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=${POSTGRES_SSLMODE} sslrootcert=${POSTGRES_SSLROOTCERT}"
     command: /usr/bin/supervisord -c "/etc/supervisor/conf.d/supervisord.conf"
