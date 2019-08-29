@@ -9,10 +9,10 @@ install: uninstall
 
 uninstall:
 	@echo STATUS=Uninstalling
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level0'
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level1'
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level2'
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level3'
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level4'
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS gadm.level5'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS gadm.level0'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS gadm.level1'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS gadm.level2'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS gadm.level3'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS gadm.level4'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS gadm.level5'
 

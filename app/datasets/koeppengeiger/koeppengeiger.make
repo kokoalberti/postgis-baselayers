@@ -20,15 +20,15 @@ install: uninstall
 	# Add the legend to the table
 	cp src/legend.txt tmp/legend.txt
 	sed -i 's/ ... /,/g' tmp/legend.txt
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS koeppengeiger.koeppengeiger_classes'
-	psql $(POSTGRES_URI) -c 'CREATE TABLE koeppengeiger.koeppengeiger_classes (gridcode int, classification varchar)'
-	cat tmp/legend.txt | psql $(POSTGRES_URI) -c "COPY koeppengeiger.koeppengeiger_classes (gridcode,classification) from stdin with delimiter E',' null as ''"
-	psql $(POSTGRES_URI) -c 'UPDATE koeppengeiger.koeppengeiger SET classification = koeppengeiger_classes.classification FROM koeppengeiger.koeppengeiger_classes WHERE koeppengeiger.gridcode = koeppengeiger_classes.gridcode'
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS koeppengeiger_classes'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS koeppengeiger.koeppengeiger_classes'
+	psql "$(POSTGRES_URI)" -c 'CREATE TABLE koeppengeiger.koeppengeiger_classes (gridcode int, classification varchar)'
+	cat tmp/legend.txt | psql "$(POSTGRES_URI)" -c "COPY koeppengeiger.koeppengeiger_classes (gridcode,classification) from stdin with delimiter E',' null as ''"
+	psql "$(POSTGRES_URI)" -c 'UPDATE koeppengeiger.koeppengeiger SET classification = koeppengeiger_classes.classification FROM koeppengeiger.koeppengeiger_classes WHERE koeppengeiger.gridcode = koeppengeiger_classes.gridcode'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS koeppengeiger_classes'
 
 uninstall:
 	@echo STATUS=Uninstalling
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS koeppengeiger.koeppengeiger'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS koeppengeiger.koeppengeiger'
 
 
 

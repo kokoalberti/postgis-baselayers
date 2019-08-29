@@ -15,5 +15,5 @@ install: uninstall
 
 uninstall:
 	@echo STATUS=Uninstalling
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS naturalearth.ne_10m_rivers'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS naturalearth.ne_10m_rivers'
 

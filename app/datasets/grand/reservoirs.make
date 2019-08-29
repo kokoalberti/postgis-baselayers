@@ -17,6 +17,6 @@ install:
 
 uninstall:
 	@echo STATUS=Uninstalling
-	psql $(POSTGRES_URI) -c 'DROP TABLE IF EXISTS grand.reservoirs CASCADE'
+	psql "$(POSTGRES_URI)" -c 'DROP TABLE IF EXISTS grand.reservoirs CASCADE'
 
 
