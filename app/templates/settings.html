@@ -10,14 +10,24 @@
     <form action="{{ url_for('install') }}" method="POST">
         <table class="table table-bordered">
         {% for layer in layers %}
-            <tr><td><tt>{{layer.key}}</tt></td><td class="text-right"><input style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;" type="checkbox" name="{{layer.key}}" value="uninstall" /></td></tr>
+            <tr><td><input style="margin-left:7px;vertical-align:middle;top:-1px;position:relative;" type="checkbox" name="{{layer.key}}" value="uninstall" /></td><td style="width:100%"><tt>{{layer.key}}</tt></td></tr>
         {% endfor %}
         </table>
-        <p class="text-right">
+        <p class="text-left">
         <input class="btn btn-primary" type="submit" value="Uninstall Selected Datasets">
         </p>
     </form>
-    <hr>
+    <hr />
+    <h2>Reload</h2>
+    <p>Reload updates the metadata in the database. This is required when new datasets have been added.</p>
+
+    <form action="{{ url_for('initialize') }}" method="POST">
+    <input type="hidden" name="initialize" value="yes" />
+    <input class="btn btn-primary" type="submit" value="Reload Metadata">
+    </form>
+
+
+    <hr />
     <h2>Version Information</h2>
     <p><tt>
         PostGIS Baselayers v{{pg_baselayers_version}}.

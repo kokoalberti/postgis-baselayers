@@ -158,7 +158,7 @@ def handle_error(error):
 
 @app.errorhandler(ApplicationNotInitialized)
 @app.route('/initialize', methods=['GET','POST'])
-def initialization_error(error=""):
+def initialize(error=""):
     """
     Show template to initialize the database.
     """
@@ -413,9 +413,6 @@ def run_task(key, target, task=None):
         conn.commit()
 
         try:
-            logger.info("App config is:")
-            logger.info(app.config)
-
             temp_dir = tempfile.TemporaryDirectory(prefix='pg-baselayers-task-')
             logger.info(f"Running task in temporary directory: {temp_dir.name}")
 
