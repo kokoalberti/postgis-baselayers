@@ -398,14 +398,12 @@ def run_task(key, target, task=None):
     # task can be run for any dataset (like installing and uninstalling it at 
     # the same time, or running two installs simultaneously)
     with huey.lock_task(key):
-
-        timeout = int(os.environ["PG_BASELAYERS_MAKE_TIMEOUT"])
-
         logger = logging.getLogger("task_logger")
         logger.setLevel(logging.DEBUG)
         logstream = StringIO()
         streamhandler = logging.StreamHandler(logstream)
         logger.addHandler(streamhandler)
+        timer = None
 
         conn = get_db()
         cur = conn.cursor()
@@ -415,8 +413,14 @@ def run_task(key, target, task=None):
         conn.commit()
 
         try:
+            logger.info("App config is:")
+            logger.info(app.config)
+
             temp_dir = tempfile.TemporaryDirectory(prefix='pg-baselayers-task-')
             logger.info(f"Running task in temporary directory: {temp_dir.name}")
+
+            timeout = int(app.config.get('PG_BASELAYERS_MAKE_TIMEOUT'))
+            logger.info("Task timeout is {}s".format(timeout))
 
             # Copy the relevant files from the application's dataset directory.
             root_dir = os.path.join(app.root_path, 'datasets', dataset)
@@ -528,7 +532,8 @@ def run_task(key, target, task=None):
 
             # Cancel any timer
             logger.info("Cancelling timer...")
-            timer.cancel()
+            if timer:
+                timer.cancel()
 
             # No matter what happens, flush the log and save in log table.
             logger.info("Flushing and saving logs...")

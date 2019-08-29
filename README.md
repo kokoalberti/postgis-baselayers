@@ -70,7 +70,7 @@ Another option is to use the dataset Makefiles directly without the web applicat
 
 Accessing databases using SSL (for example on AWS RDS) is supported through the `POSTGRES_SSLMODE=verify-full` and `POSTGRES_SSLROOTCERT=/root/.postgresql/root.crt` parameters. The `/root/.postgresql/root.crt` for Amazon RDS has been `ADD`ed into the application container on build. To use another one change the path or overwrite it.
 
-The [`docker-compose-dev.yaml`](docker-compose-dev.yaml) file can be used to start a development environment to experiment with the code. It doesnt use supervisord and starts two app containers, one for the work queue and one for the app with Flask's development server.
+The [`docker-compose-dev.yaml`](docker-compose-dev.yaml) file can be used to start a development environment to experiment with the code. It doesnt use supervisord and starts two app containers, one for the work queue and one for the app with Flask's development server. To manually run Makefiles in the same environment as the app, grab a shell on the running container with `docker exec -it postgis-baselayers-app /bin/bash`. 
 
 ## Accessing Data
 
