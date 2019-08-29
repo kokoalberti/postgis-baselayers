@@ -384,7 +384,7 @@ def dataset(dataset_name):
 
 
 @huey.task(context=True)
-def run_task(key, target, task=None, timeout=1800):
+def run_task(key, target, task=None):
     """
     Run a task
 
@@ -398,6 +398,8 @@ def run_task(key, target, task=None, timeout=1800):
     # task can be run for any dataset (like installing and uninstalling it at 
     # the same time, or running two installs simultaneously)
     with huey.lock_task(key):
+
+        timeout = int(os.environ["PG_BASELAYERS_MAKE_TIMEOUT"])
 
         logger = logging.getLogger("task_logger")
         logger.setLevel(logging.DEBUG)
