@@ -96,6 +96,7 @@ Vector datasets currently available in PostGIS Baselayers are a selection of:
 * [Koeppen-Geiger Climate Classifications](app/datasets/koeppengeiger/)
 * [Natural Earth](app/datasets/naturalearth/)
 * [GRanD Global Reservoirs and Dams](app/datasets/grand/)
+* [Global Crop Calendars](app/datasets/crop_calendars/)
 
 And an example dataset that can help you get started if you're interested in adding other datasets:
 

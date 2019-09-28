@@ -1,0 +1,18 @@
+{
+    "name": "crop_calendars",
+    "metadata": {
+        "description": "Global Crop Calendars",
+        "attribution": [
+            "Sacks, W.J., D. Deryng, J.A. Foley, and N. Ramankutty (2010). Crop planting dates: An analysis of global patterns. Global Ecology and Biogeography, 19: 607-620."
+        ],
+        "url":""
+    },
+    "layers": [
+        {
+            "name": "sacks_crop_calendar",
+            "metadata": {
+                "description": "Global crop calendars by Sacks et al."
+            }
+        }
+    ]
+}
