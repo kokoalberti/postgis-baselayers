@@ -93,6 +93,7 @@ Vector datasets currently available in PostGIS Baselayers are a selection of:
 
 * [Geonames](app/datasets/geonames/)
 * [GADM](app/datasets/gadm/)
+* [GLWD](app/datasets/glwd/)
 * [Koeppen-Geiger Climate Classifications](app/datasets/koeppengeiger/)
 * [Natural Earth](app/datasets/naturalearth/)
 * [GRanD Global Reservoirs and Dams](app/datasets/grand/)
