@@ -1,0 +1,22 @@
+{
+    "name": "glwd",
+    "metadata": {
+        "description": "Global Lakes and Wetlands Database",
+        "attribution": ["Data from World Wildlife."],
+        "url": "https://www.worldwildlife.org/pages/global-lakes-and-wetlands-database#"
+    },
+    "layers": [
+        {
+            "name": "glwd_level_1",
+            "metadata": {
+                "description": "Level 1 (GLWD-1) comprises the 3067 largest lakes (area ≥ 50 km2) and 654 largest reservoirs (storage capacity ≥ 0.5 km3) worldwide, and includes extensive attribute data."
+            }
+        },
+        {
+            "name": "glwd_level_2",
+            "metadata": {
+                "description": "Level 2 (GLWD-2) comprises permanent open water bodies with a surface area ≥ 0.1 km2 excluding the water bodies contained in GLWD-1."
+            }
+        }
+    ]
+}
