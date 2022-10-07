@@ -34,7 +34,8 @@ RUN apt-get update -y && \
     python3-numpy \
     python3-pip \
     gdal-abi-2-2-3 \
-    libgdal20
+    libgdal20 \
+    libpq-dev
 
 RUN apt-get update -y 
 
@@ -51,8 +52,7 @@ WORKDIR /app
 ADD . /app
 
 # Install Python requirements
-RUN apt-get install -y libpq-dev && \
-    pip3 install --upgrade pip && \
+RUN pip3 install --upgrade pip && \
     pip3 install --upgrade setuptools && \
     pip3 install -r requirements.txt
 
