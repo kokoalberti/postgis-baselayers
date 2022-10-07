@@ -32,7 +32,11 @@ RUN apt-get update -y && \
     supervisor \
     python3-dev \
     python3-numpy \
-    python3-pip
+    python3-pip \
+    gdal-abi-2-2-3 \
+    libgdal20
+
+RUN apt-get update -y 
 
 # Install geospatial stack from UbuntuGIS
 RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && \
@@ -47,7 +51,10 @@ WORKDIR /app
 ADD . /app
 
 # Install Python requirements
-RUN pip3 install -r requirements.txt
+RUN apt-get install -y libpq-dev && \
+    pip3 install --upgrade pip && \
+    pip3 install --upgrade setuptools && \
+    pip3 install -r requirements.txt
 
 # Copy the supervisord configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
